@@ -1,0 +1,34 @@
+#for windows
+build/
+
+project.xcworkspace/
+
+#for Java
+.project
+.classpath
+*.class
+bin/
+.settings/
+./metadata/
+classes/
+target/
+test-classes/
+
+#for InteliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+log/
+
+#Gradle
+local.properties
+.gradle/
+gradlew.bat
+gradlew.sh
+gradlew
+/gradle/
+
+# temp directory
+temp/

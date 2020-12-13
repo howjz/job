@@ -1,0 +1,8 @@
+how:
+  job:
+    enable: true
+    debug:
+      sleep: 1500
+      log: true
+    pool:
+      size: 10

@@ -1,0 +1,127 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.1.8.RELEASE' apply false
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE' apply false
+}
+
+group 'com.github.zhangjh-github'
+version '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+ext {
+    log4j2Version = '2.7'
+    slf4jVersion = '1.7.22'
+    springBootVersion = '2.1.8.RELEASE'
+    druidVersion = '1.1.9'
+    mybatisStarterVersion = '2.1.0'
+}
+
+project(':job-core') {
+    apply plugin: 'java'
+
+    dependencies {
+        // bean
+        compile("org.projectlombok:lombok:1.18.4")
+
+        // commons
+        compile("commons-lang:commons-lang:2.3")
+        compile("org.apache.commons:commons-lang3:3.6")
+        compile("commons-io:commons-io:2.6")
+        
+        // json
+        compile("com.fasterxml.jackson.core:jackson-core:2.9.10")
+        compile("com.fasterxml.jackson.core:jackson-databind:2.9.10")
+
+        // log
+        compile("org.slf4j:slf4j-api:${slf4jVersion}")
+        runtime("org.slf4j:jcl-over-slf4j:${slf4jVersion}")
+        compile("org.apache.logging.log4j:log4j-web:${log4j2Version}")
+        compile("org.apache.logging.log4j:log4j-slf4j-impl:${log4j2Version}")
+        compile("org.apache.logging.log4j:log4j-api:${log4j2Version}")
+        compile("org.apache.logging.log4j:log4j-core:${log4j2Version}")
+
+        // http
+        compile("com.squareup.okhttp3:okhttp:3.12.0")
+        
+        // test
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+}
+
+project(':job-spring-boot-autoconfigure') {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(":job-core")
+        compile("org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}")
+        compile("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
+    }
+}
+
+project(':job-spring-boot-starter:job-spring-boot-starter') {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(":job-spring-boot-autoconfigure")
+        compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
+    }
+}
+
+project(':job-spring-boot-starter:job-spring-boot-starter-redis') {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(":job-spring-boot-autoconfigure")
+        // redis
+        compile("org.apache.commons:commons-pool2:2.0")
+        compile("org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}")
+    }
+}
+
+project(':job-spring-boot-starter:job-spring-boot-starter-db') {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(":job-spring-boot-autoconfigure")
+        // druid
+        compile("com.alibaba:druid-spring-boot-starter:${druidVersion}")
+        // mybatis
+        compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisStarterVersion}")
+    }
+}
+
+project(':job-spring-boot-samples') {
+    apply plugin: 'java'
+
+    dependencies {
+        compile project(":job-spring-boot-starter:job-spring-boot-starter")
+//        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 1.8
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+    repositories {
+        // Maven本地仓库
+        mavenLocal()
+        // 阿里巴巴Maven库
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        // 中央库
+        mavenCentral()
+    }
+
+    dependencies {}
+
+    // remove default logger
+     configurations {
+        all*.exclude group: 'commons-logging'
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+
+}

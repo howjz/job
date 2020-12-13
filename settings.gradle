@@ -1,0 +1,8 @@
+rootProject.name = 'job'
+
+include 'job-core'
+include 'job-spring-boot-autoconfigure'
+include 'job-spring-boot-starter:job-spring-boot-starter'
+include 'job-spring-boot-starter:job-spring-boot-starter-redis'
+include 'job-spring-boot-starter:job-spring-boot-starter-db'
+include 'job-spring-boot-samples'
