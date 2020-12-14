@@ -70,8 +70,17 @@ public class GenericExecutorManager extends AbstractExecutorManager {
                         case TASK:
                             // 3.1.1、任务 就绪
                             this.handleReadyTask(job, task);
-                            // 3.1.2、任务开始
-                            this.handleRunningTask(job, task);
+                            // 3.1.2、任务 就绪后，根据状态继续执行
+                            enableFlag = this.enable(job, task);
+                            switch (enableFlag) {
+                                case KEEP:
+                                    // 3.1.3、任务开始
+                                    this.handleRunningTask(job, task);
+                                    break;
+                                case RESET:
+                                    this.offerTaskId(jobAndTaskId);
+                                    break;
+                            }
                             break;
                         case TASK_JOB:
                             this.handleCompleteTask(job, task);

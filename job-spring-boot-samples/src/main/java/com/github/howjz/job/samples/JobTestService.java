@@ -34,8 +34,11 @@ public class JobTestService {
      * @throws Exception
      */
     public Job testNotifyJob() throws Exception {
-        return new TestNotifyJob(8)
-                .start();
+        TestNotifyJob job = new TestNotifyJob(8);
+        job.start();
+//        job.waiting();
+//        job.log("调用了waiting方法这个才会最后显示");
+        return job;
     }
 
     /**

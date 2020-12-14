@@ -31,7 +31,7 @@ public class TestJob extends GenericJob<Integer> {
 
     @Override
     public void handleCompleteTask(Job job, Job task) throws Exception {
-        if (job.isFinish()) {
+        if (job.isEnd()) {
             System.out.println("作业完成");
         }
     }
@@ -43,19 +43,18 @@ public class TestJob extends GenericJob<Integer> {
      * @return
      */
     @Override
-    public List<String> generateTaskParams(Integer nums) {
+    public List<Object> generateTaskParams(Integer nums) {
         return Stream.iterate(1, n -> n + 1)
                 .limit(nums)
-                .map(String::valueOf)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public String execute(Job job, Job task, String param) throws Exception {
+    public String execute(Job job, Job task, Object param) throws Exception {
         int j = new Random().nextInt(100);
         Thread.sleep(j);
         result.add(j);
-        System.out.println(String.format("当前线程：[%s], 随机数任务 [%s] 完成", Thread.currentThread().getName(), Integer.parseInt(param)));
+        System.out.println(String.format("当前线程：[%s], 随机数任务 [%s] 完成", Thread.currentThread().getName(), param));
         return String.valueOf(j);
     }
 

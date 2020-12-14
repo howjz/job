@@ -38,8 +38,8 @@ public class Job implements Serializable, JobOperable, JobExpressible, JobIndire
     // 用途标记
     private String purpose;
     // 执行详情
-    private String param;
-    private String result;
+    private Object param;
+    private Object result;
     private JobStatus status;
     private Exception exception;
     // 初始重试次数

@@ -178,9 +178,16 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
 
 
     @Override
-    public void handleFinishJob(Job job) throws Exception {
+    public void handleCompleteJob(Job job) throws Exception {
         for(String operate: this.operators.keySet()) {
-            this.operators.get(operate).handleFinishJob(job);
+            this.operators.get(operate).handleCompleteJob(job);
+        }
+    }
+
+    @Override
+    public void handleEndJob(Job job) throws Exception {
+        for(String operate: this.operators.keySet()) {
+            this.operators.get(operate).handleEndJob(job);
         }
     }
 
@@ -473,8 +480,11 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
         this.jobManager.handleTask(job, task, status);
         this.handleTaskToOperator(job, task, status);
         // 4、调用查看是否已完成
-        if (job.isFinish()) {
-            this.handleFinishJob(job);
+        if (job.isEnd()) {
+            this.handleEndJob(job);
+        }
+        if (job.isComplete()) {
+            this.handleCompleteJob(job);
         }
     }
 

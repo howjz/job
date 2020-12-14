@@ -63,9 +63,16 @@ public interface ExecutorListener {
     void handleRemoveJob(Job job) throws Exception;
 
     /**
+     * 作业完成
+     * @param job
+     * @throws Exception
+     */
+    void handleCompleteJob(Job job) throws Exception;
+
+    /**
      * 作业完成（包含错误的情况）
      * @param job
      * @throws Exception
      */
-    void handleFinishJob(Job job) throws Exception;
+    void handleEndJob(Job job) throws Exception;
 }

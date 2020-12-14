@@ -2,7 +2,7 @@ how:
   job:
     enable: true
     debug:
-      sleep: 1500
-      log: true
+      sleep: 0
+      log: false
     pool:
       size: 10

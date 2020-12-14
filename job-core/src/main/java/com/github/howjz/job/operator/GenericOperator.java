@@ -124,7 +124,12 @@ public abstract class GenericOperator<T> implements Operator<T> {
     }
 
     @Override
-    public void handleFinishJob(Job job) throws Exception {
+    public void handleCompleteJob(Job job) throws Exception {
+
+    }
+
+    @Override
+    public void handleEndJob(Job job) throws Exception {
 
     }
 }

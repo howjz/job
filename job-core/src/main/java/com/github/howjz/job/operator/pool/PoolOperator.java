@@ -91,7 +91,7 @@ public class PoolOperator extends GenericOperator<PoolBean> {
             poolBean.setCurrentSize(poolBean.getCurrentSize() + 1);
             this.privatePools.put(job.getId(), poolBean);
         }
-        if (job.isFinish()) {
+        if (job.isEnd()) {
             this.privatePools.remove(job.getId());
         }
     }

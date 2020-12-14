@@ -38,7 +38,13 @@ public interface JobIndirect {
         return superJob;
     }
 
-    default boolean isFinish() {
+    default boolean isComplete() {
+        Job superJob = (Job) this;
+        Snapshot snapshot = superJob.getSnapshot();
+        return snapshot != null && snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getComplete());
+    }
+
+    default boolean isEnd() {
         Job superJob = (Job) this;
         Snapshot snapshot = superJob.getSnapshot();
         return snapshot != null && snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getEnd());

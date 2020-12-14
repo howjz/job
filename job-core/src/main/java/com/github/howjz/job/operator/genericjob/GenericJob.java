@@ -10,7 +10,12 @@ import com.github.howjz.job.operator.execute.Executable;
 import com.github.howjz.job.operator.then.Thenable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -23,10 +28,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public abstract class GenericJob<T> extends Job implements Executable, Thenable, ExecutorListener, StatusListener {
 
-    private T jobParam;
-
-    protected GenericJob(T jobParam) throws Exception {
-        this.jobParam = jobParam;
+    protected GenericJob(T param) throws Exception {
+        this.setParam(param);
         // 这里需要手动触发 作业创建
         JobHelper.manager.handleCreateJob(this);
     }
@@ -36,7 +39,7 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
      * @param tj    作业参数
      * @return      任务参数列表
      */
-    public abstract List<String> generateTaskParams(T tj);
+    public abstract List<Object> generateTaskParams(T tj) throws Exception;
 
     /**
      * 存在返回结果的执行函数
@@ -44,18 +47,16 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
      * @param task
      * @return
      */
-    public abstract String execute(Job job, Job task, String param) throws Exception;
+    public abstract String execute(Job job, Job task, Object param) throws Exception;
 
     /**
      * 生成任务
      * @return
      */
     public void generateTasks() throws Exception {
-        // 1、设置作业参数
-        this.setParam(String.valueOf(this.getJobParam()));
-        // 2、获取任务参数
-        List<String> taskParams = this.generateTaskParams(this.getJobParam());
-        // 3、根据任务参数生成任务
+        // 1、获取任务参数
+        List<Object> taskParams = this.generateTaskParams((T) this.getParam());
+        // 2、根据任务参数生成任务
         this.mappingTask(taskParams, param -> (this));
     }
 
@@ -68,11 +69,24 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
     @Override
     public void execute(Job job, Job task) throws Exception {
         // 1、获取任务参数
-        String param = task.getParam();
+        Object param = task.getParam();
         // 2、获取任务结果
         String result = this.execute(job, task, param);
         // 3、设置任务结果
         task.setResult(result);
+    }
+
+    public synchronized void log(String text) throws IOException {
+        System.out.println(text);
+        File logFile = new File("log/job_" + this.getId() + ".txt");
+        if (!logFile.exists()) {
+            FileUtils.touch(logFile);
+        }
+        FileWriter fileWriter = new FileWriter(logFile, true);
+        fileWriter
+                .append(text)
+                .append("\n")
+                .close();
     }
 
     @Override
@@ -116,7 +130,12 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
     }
 
     @Override
-    public void handleFinishJob(Job job) throws Exception {
+    public void handleCompleteJob(Job job) throws Exception {
+
+    }
+
+    @Override
+    public void handleEndJob(Job job) throws Exception {
 
     }
 

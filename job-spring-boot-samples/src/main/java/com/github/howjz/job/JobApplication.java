@@ -1,5 +1,7 @@
 package com.github.howjz.job;
 
+import com.github.howjz.job.samples.file.DownloadFile;
+import com.github.howjz.job.samples.file.DownloadJob;
 import com.github.howjz.job.samples.JobTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,7 +24,12 @@ public class JobApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        this.jobTestService.testNotifyJob();
+        System.out.println("等待下载完成");
+        DownloadFile file = new DownloadFile("http://down.sandai.net/thunder9/Thunder9.1.40.898.exe");
+        new DownloadJob(file)
+                .start()
+                .waiting();
+        System.out.println("等待下载结束");
     }
 
 }

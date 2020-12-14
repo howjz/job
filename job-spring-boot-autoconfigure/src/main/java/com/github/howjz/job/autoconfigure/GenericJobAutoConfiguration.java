@@ -278,7 +278,6 @@ public class GenericJobAutoConfiguration {
         NotifyOperator notifyOperator = new NotifyOperator(dataContext);
         RetryOperator retryOperator = new RetryOperator(dataContext);
         ErrorOperator errorOperator = new ErrorOperator(dataContext);
-        ExecuteOperator executeOperator = new ExecuteOperator(dataContext);
         LinkOperator linkOperator = new LinkOperator(dataContext);
         ThenOperator thenOperator = new ThenOperator(dataContext);
         AllThenOperator allThenOperator = new AllThenOperator(dataContext);
@@ -286,10 +285,11 @@ public class GenericJobAutoConfiguration {
         GenericJobOperator genericJobOperator = new GenericJobOperator(dataContext);
         PoolOperator poolOperator = new PoolOperator(dataContext);
         WaitingOperator waitingOperator = new WaitingOperator(dataContext);
+        ExecuteOperator executeOperator = new ExecuteOperator(dataContext);
         DebugOperator debugOperator = new DebugOperator(dataContext);
         return Arrays.asList(
-          configOperator, alwaysRetryOperator, restartOperator, notifyOperator, retryOperator, errorOperator, executeOperator, linkOperator,
-          thenOperator, allThenOperator, joinOperator, genericJobOperator, poolOperator, waitingOperator, debugOperator
+          configOperator, alwaysRetryOperator, restartOperator, notifyOperator, retryOperator, errorOperator, linkOperator,
+          thenOperator, allThenOperator, joinOperator, genericJobOperator, poolOperator, waitingOperator, executeOperator, debugOperator
         );
     }
 

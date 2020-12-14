@@ -88,7 +88,7 @@ public class ErrorOperator extends GenericOperator<Errorable> {
     }
 
     @Override
-    public void handleFinishJob(Job job) throws Exception {
+    public void handleCompleteJob(Job job) throws Exception {
         // 1、作业完成后，移除错误回调函数记录
 //        this.errorableMap.remove(job.getId());
         // 2、移除跳过标记

@@ -7,6 +7,7 @@ import com.github.howjz.job.operator.config.ConfigBean;
 import com.github.howjz.job.operator.cross.CrossType;
 import com.github.howjz.job.operator.error.Errorable;
 import com.github.howjz.job.operator.execute.Executable;
+import com.github.howjz.job.operator.notify.NotifyBean;
 import com.github.howjz.job.operator.notify.NotifyType;
 import com.github.howjz.job.operator.pool.PoolBean;
 import com.github.howjz.job.operator.restart.RestartBean;
@@ -27,11 +28,23 @@ public interface JobOperable {
     }
 
     default void pause() throws Exception {
-        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, (Job) this, NotifyType.PAUSE);
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, superJob, new NotifyBean(NotifyType.PAUSE, superJob, null));
+    }
+
+    default void pause(Job task) throws Exception {
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, superJob, new NotifyBean(NotifyType.PAUSE, superJob, task));
     }
 
     default void stop() throws Exception {
-        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, (Job) this, NotifyType.STOP);
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, superJob, new NotifyBean(NotifyType.STOP, superJob, null));
+    }
+
+    default void stop(Job task) throws Exception {
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY,superJob, new NotifyBean(NotifyType.STOP, superJob, task));
     }
 
     default void restart() throws Exception {
@@ -45,7 +58,13 @@ public interface JobOperable {
     }
 
     default void remove() throws Exception {
-        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, (Job) this, NotifyType.REMOVE);
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, superJob, new NotifyBean(NotifyType.REMOVE, superJob, null));
+    }
+
+    default void remove(Job task) throws Exception {
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY, superJob, new NotifyBean(NotifyType.REMOVE, superJob, task));
     }
 
     default void waiting() throws Exception {

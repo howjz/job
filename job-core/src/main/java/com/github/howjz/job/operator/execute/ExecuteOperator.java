@@ -3,6 +3,7 @@ package com.github.howjz.job.operator.execute;
 import com.github.howjz.job.Job;
 import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.JobHelper;
+import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.operator.GenericOperator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +49,9 @@ public class ExecuteOperator extends GenericOperator<Executable> {
 
     @Override
     public synchronized void handleReadyTask(Job job, Job task) throws Exception {
+        if (JobStatus.READY != task.getStatus()) {
+            return;
+        }
         Executable executable = executableMap.get(task.getId());
         if (executable == null) {
             log.error(String.format("任务[%s:%s]的执行函数为空", task.getParentId(), task.getId()));
@@ -58,6 +62,9 @@ public class ExecuteOperator extends GenericOperator<Executable> {
 
     @Override
     public synchronized void handleRunningTask(Job job, Job task) throws Exception {
+        if (JobStatus.RUNNING != task.getStatus()) {
+            return;
+        }
         ExecuteRunnable runnable = this.executeRunnableMap.get(task.getId());
         if (runnable == null) {
             log.error(String.format("任务[%s:%s]的执行线程为空", task.getParentId(), task.getId()));

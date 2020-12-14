@@ -20,7 +20,7 @@ public interface JobExpressible {
         Job superJob = (Job) this;
         for(int i = 0; i < num; i++) {
             Job task = JobHelper.manager.addTask(superJob, getFunction.apply(i));
-            task.setParam(String.valueOf(i));
+            task.setParam(i);
         }
         return superJob;
     }
@@ -30,13 +30,7 @@ public interface JobExpressible {
         if (ts != null) {
             for(T t: ts) {
                 Job task = JobHelper.manager.addTask(superJob, getFunction.apply(t));
-                if (t instanceof Integer) {
-                    task.setParam(String.valueOf(t));
-                } else if (t instanceof String) {
-                    task.setParam((String) t);
-                } else {
-                    task.setParam(JsonUtil.toJson(t));
-                }
+                task.setParam(t);
             }
         }
         return superJob;
@@ -47,7 +41,7 @@ public interface JobExpressible {
         if (map != null) {
             for(Map.Entry<TK, TV> entry: map.entrySet()) {
                 Job task = JobHelper.manager.addTask(superJob, getFunction.apply(entry));
-                task.setParam(JsonUtil.toJson(entry));
+                task.setParam(entry);
                 superJob.addTask(task);
             }
         }

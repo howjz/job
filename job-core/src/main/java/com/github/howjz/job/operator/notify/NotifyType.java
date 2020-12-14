@@ -9,5 +9,4 @@ public enum  NotifyType {
     PAUSE,
     STOP,
     REMOVE
-
 }

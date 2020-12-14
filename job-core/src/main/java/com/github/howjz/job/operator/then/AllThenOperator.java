@@ -30,7 +30,7 @@ public class AllThenOperator extends GenericOperator<Thenable> {
     }
 
     @Override
-    public void handleFinishJob(Job job) throws Exception {
+    public void handleCompleteJob(Job job) throws Exception {
         Thenable thenable = this.allThenMap.get(job.getId());
         if (thenable != null) {
             thenable.then(job);
