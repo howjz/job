@@ -2,12 +2,12 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.1.8.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.8.RELEASE' apply false
+    id 'signing'
+    id 'maven-publish'
 }
 
-group 'com.github.zhangjh-github'
+group 'com.github.howjz'
 version '1.0.0-SNAPSHOT'
-sourceCompatibility = 1.8
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 ext {
     log4j2Version = '2.7'
@@ -15,11 +15,22 @@ ext {
     springBootVersion = '2.1.8.RELEASE'
     druidVersion = '1.1.9'
     mybatisStarterVersion = '2.1.0'
+    serviceVersion = '1.0.0-SNAPSHOT'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
 }
 
 project(':job-core') {
     apply plugin: 'java'
-
+    apply plugin: 'maven-publish'
     dependencies {
         // bean
         compile("org.projectlombok:lombok:1.18.4")
@@ -28,7 +39,7 @@ project(':job-core') {
         compile("commons-lang:commons-lang:2.3")
         compile("org.apache.commons:commons-lang3:3.6")
         compile("commons-io:commons-io:2.6")
-        
+
         // json
         compile("com.fasterxml.jackson.core:jackson-core:2.9.10")
         compile("com.fasterxml.jackson.core:jackson-databind:2.9.10")
@@ -43,7 +54,7 @@ project(':job-core') {
 
         // http
         compile("com.squareup.okhttp3:okhttp:3.12.0")
-        
+
         // test
         testCompile group: 'junit', name: 'junit', version: '4.12'
     }
@@ -51,7 +62,7 @@ project(':job-core') {
 
 project(':job-spring-boot-autoconfigure') {
     apply plugin: 'java'
-
+    apply plugin: 'maven-publish'
     dependencies {
         compile project(":job-core")
         compile("org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}")
@@ -61,7 +72,7 @@ project(':job-spring-boot-autoconfigure') {
 
 project(':job-spring-boot-starter:job-spring-boot-starter') {
     apply plugin: 'java'
-
+    apply plugin: 'maven-publish'
     dependencies {
         compile project(":job-spring-boot-autoconfigure")
         compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
@@ -70,7 +81,7 @@ project(':job-spring-boot-starter:job-spring-boot-starter') {
 
 project(':job-spring-boot-starter:job-spring-boot-starter-redis') {
     apply plugin: 'java'
-
+    apply plugin: 'maven-publish'
     dependencies {
         compile project(":job-spring-boot-autoconfigure")
         // redis
@@ -81,7 +92,7 @@ project(':job-spring-boot-starter:job-spring-boot-starter-redis') {
 
 project(':job-spring-boot-starter:job-spring-boot-starter-db') {
     apply plugin: 'java'
-
+    apply plugin: 'maven-publish'
     dependencies {
         compile project(":job-spring-boot-autoconfigure")
         // druid
@@ -93,19 +104,22 @@ project(':job-spring-boot-starter:job-spring-boot-starter-db') {
 
 project(':job-spring-boot-samples') {
     apply plugin: 'java'
-
+    apply plugin: 'maven-publish'
     dependencies {
         compile project(":job-spring-boot-starter:job-spring-boot-starter")
 //        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     }
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'io.spring.dependency-management'
+allprojects {
+    apply plugin: "java"
+    apply plugin: "java-library"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
+    apply plugin: "io.spring.dependency-management"
 
     sourceCompatibility = 1.8
-    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
     repositories {
         // Maven本地仓库
@@ -116,7 +130,12 @@ subprojects {
         mavenCentral()
     }
 
-    dependencies {}
+    javadoc {
+        options.tags = ["date"]
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption("html5", true)
+        }
+    }
 
     // remove default logger
      configurations {
@@ -124,4 +143,62 @@ subprojects {
         all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId rootProject.name
+                artifactId project.name
+                version "$serviceVersion"
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+                pom {
+                    name = 'how-job'
+                    description = 'A simple job executor library'
+                    url = 'http://www.example.com/library'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'howjz'
+                            name = 'ZhangJiaHao'
+                            email = '2862424470@qq.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/howjz/job.git'
+                        developerConnection = 'scm:git:ssh://github.com/howjz/job.git'
+                        url = 'http://github.com/howjz/job'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+                // 指定要上传的仓库
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                // 认证用户和密码
+                credentials {
+                    username "$nexususer"
+                    password "$nexuspwd"
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html4', true)
+    }
 }

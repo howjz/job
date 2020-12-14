@@ -1,4 +1,4 @@
-rootProject.name = 'job'
+rootProject.name = 'com.github.howjz.job'
 
 include 'job-core'
 include 'job-spring-boot-autoconfigure'
