@@ -4,7 +4,6 @@ import com.github.howjz.job.Executor;
 import com.github.howjz.job.Job;
 import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.JobHelper;
-import com.github.howjz.job.constant.JobKey;
 import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.constant.JobType;
 import com.github.howjz.job.manager.GenericExecutorManager;
@@ -185,7 +184,6 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
         }
     }
 
-
     @Override
     public void handleCompleteJob(Job job) throws Exception {
         job.setStatus(JobStatus.COMPLETE);
@@ -235,8 +233,8 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
         if (job == null) {
             throw new RuntimeException("作业不能为空");
         }
-        // 2、设置基础参数
         job.setIssuer(this.executorId);
+        // 2、设置基础参数
         job.set_waited(true);
         job.set_restart(null);
         // 3、开始子任务
@@ -265,7 +263,7 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
                         if (JobType.TASK_JOB == task.getType()) {
                             try {
                                 // 3.3.1、任务型作业 内部的子任务也需要开始
-                                this.startJob(task);
+                                task.start();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -287,11 +285,11 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
         }
         // 4、触发开始
         if (JobType.JOB == job.getType() || JobType.TASK_JOB == job.getType()) {
-            if (JobStatus.COMPLETE == job.getStatus() && job.getTasks().size() == 0) {
-                this.handleCompleteJob(job);
-            } else {
-                this.handleStartJob(job);
-            }
+            this.handleStartJob(job);
+        }
+        // 5、校验
+        if (job.isEnd()) {
+            this.handleCompleteJob(job);
         }
     }
 

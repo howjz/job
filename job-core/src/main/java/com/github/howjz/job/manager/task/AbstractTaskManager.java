@@ -103,8 +103,9 @@ public abstract class AbstractTaskManager implements TaskManager {
 
     @Override
     public void handleAddTask(Job job, Job task) throws Exception {
-        job.setStatus(JobStatus.WAIT);
-        task.setStatus(JobStatus.WAIT);
+        if (job.getStatus() == JobStatus.READY) {
+            job.setStatus(JobStatus.WAIT);
+        }
     }
 
     @Override

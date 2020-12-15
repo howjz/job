@@ -13,7 +13,6 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -28,13 +27,16 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public abstract class GenericJob<T> extends Job implements Executable, Thenable, ExecutorListener, StatusListener {
     private static final long serialVersionUID = 8708949801206772106L;
-    private boolean inited;
+    private boolean ready;
 
-    protected GenericJob(T param) throws Exception {
-        this.setParam(param);
-        this.inited = false;
-        // 这里需要手动触发 作业创建
-        JobHelper.manager.handleCreateJob(this);
+    protected GenericJob() {
+        this.ready = false;
+        try {
+            // 这里需要手动触发 作业创建
+            JobHelper.manager.handleCreateJob(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -56,12 +58,14 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
      * 必须调用init方法
      * @throws Exception
      */
-    protected void init() throws Exception {
+    @Override
+    public Job ready() throws Exception {
         // 当前为 GenericJob，生成任务并设置then
-        this.inited = true;
+        this.handleReadyJob(this);
+        this.ready = true;
         this.generateTasks();
         this.then((Thenable) this);
-        this.handleCreateJob(this);
+        return this;
     }
 
     /**
@@ -212,8 +216,8 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
 
     @Override
     public Job start() throws Exception {
-        if (!this.inited) {
-            throw new RuntimeException("开启自定义任务前必须调用init");
+        if (!this.ready) {
+            throw new RuntimeException("开启自定义任务前必须调用ready");
         }
         return super.start();
     }

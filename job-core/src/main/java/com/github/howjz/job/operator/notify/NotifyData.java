@@ -1,10 +1,11 @@
 package com.github.howjz.job.operator.notify;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.howjz.job.operator.OperatorData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,9 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhangjh
  * @date 2020/12/13 21:05
  */
+@Getter
+@Setter
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class NotifyData implements Serializable {
+public class NotifyData extends OperatorData {
     private static final long serialVersionUID = 8718383066115080147L;
 
     /**
@@ -27,6 +30,5 @@ public class NotifyData implements Serializable {
      *  当 STOP 时，不执行任务，修改任务状态为 STOP
      *  当 SKIP 时，不执行任务，修改任务状态为 SKIP
      */
-    @JsonIgnore
     private Map<String, Integer> notifyMap = new ConcurrentHashMap<>();
 }

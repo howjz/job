@@ -1,0 +1,27 @@
+version: "3.2"
+# docker-machine create --engine-registry-mirror=http://hub-mirror.c.163.com -d virtualbox default 是要创建
+services:
+
+  redis:
+    image: redis:5.0.10
+    container_name: redis
+    hostname: redis
+    privileged: true
+    restart: always
+    ports:
+      - 63791:6379
+    volumes:
+      - ./redis.conf:/etc/redis/redis.conf
+    command:
+      redis-server /etc/redis/redis.conf
+
+  postgis:
+    image: postgis/postgis:9.6-2.5
+    container_name: postgis
+    hostname: postgis
+    restart: always
+    ports:
+      - 54321:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456

@@ -22,8 +22,8 @@ public class LinkOperator extends GenericOperator<ObjectUtils.Null> {
 
     public LinkOperator(JobDataContext dataContext) {
         super(dataContext);
-        this.waitMap = dataContext.getLinkData().getLinkWaitMap();
-        this.notifyMap = dataContext.getLinkData().getLinkNotifyMap();
+        this.waitMap = dataContext.getLinkData().getWaitMap();
+        this.notifyMap = dataContext.getLinkData().getNotifyMap();
     }
 
     @Override

@@ -35,6 +35,7 @@ import com.github.howjz.job.util.IPUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +64,8 @@ import java.util.concurrent.*;
 @EnableConfigurationProperties(JobProperties.class)
 @Lazy(false)
 @EnableAsync
-@ConditionalOnExpression("${how.job.enable}")
+@ConditionalOnExpression("${how.job.enable:false} && '${how.job.type:local}'.equals('local')")
+@ConditionalOnMissingBean(GenericJobAutoConfiguration.class)
 public class GenericJobAutoConfiguration {
 
     @Autowired
@@ -151,7 +153,7 @@ public class GenericJobAutoConfiguration {
      *      需要小心互相依赖
      * @return  数据上下文
      */
-    @Bean
+    @Bean(JobKey.Context.INSTANCE)
     public JobDataContext dataContext() {
         JobDataContext dataContext = new JobDataContext();
         dataContext.setNotifyData(operatorNotifyData());

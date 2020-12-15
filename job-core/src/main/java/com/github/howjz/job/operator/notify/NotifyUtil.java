@@ -1,7 +1,6 @@
 package com.github.howjz.job.operator.notify;
 
 import com.github.howjz.job.Job;
-import com.github.howjz.job.constant.JobStatus;
 
 /**
  * @author zhangjh

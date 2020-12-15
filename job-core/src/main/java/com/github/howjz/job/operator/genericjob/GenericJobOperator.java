@@ -3,7 +3,6 @@ package com.github.howjz.job.operator.genericjob;
 import com.github.howjz.job.Job;
 import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.operator.GenericOperator;
-import com.github.howjz.job.operator.then.Thenable;
 import org.apache.commons.lang.ObjectUtils;
 
 /**

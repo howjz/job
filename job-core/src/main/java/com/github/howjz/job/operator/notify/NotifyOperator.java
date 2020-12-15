@@ -6,13 +6,9 @@ import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.constant.JobType;
 import com.github.howjz.job.operator.GenericOperator;
-import com.github.howjz.job.operator.Operator;
 import com.github.howjz.job.operator.OperatorEnableFlag;
-import com.github.howjz.job.operator.error.ErrorUtil;
-import com.github.howjz.job.util.JobUtil;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author zhangjh
@@ -22,9 +18,15 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
 
     private final Map<String, Integer> notifyMap;
 
+    private final Map<String, Job> jobMap;
+
+    private final Map<String, Map<String, Job>> jobTaskMap;
+
     public NotifyOperator(JobDataContext dataContext) {
         super(dataContext);
         this.notifyMap = dataContext.getNotifyData().getNotifyMap();
+        this.jobMap = dataContext.getJobMap();
+        this.jobTaskMap = dataContext.getJobTaskMap();
     }
 
     @Override
@@ -80,7 +82,17 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
                     throw new RuntimeException("当前作业未结束，无法移除");
                 }
                 // 主动触发 remove
-                JobHelper.manager.handleRemoveJob(jobOrTask);
+                Job job = operator.getJob();
+                this.getExecutorManager().handleRemoveJob(job);
+                for (Job task : job.getTasks()) {
+                    if (JobType.TASK_JOB == task.getType()) {
+                        this.getExecutorManager().handleRemoveJob(task);
+                        this.jobTaskMap.remove(task.getId());
+                        this.jobMap.remove(task.getId());
+                    }
+                }
+                this.jobTaskMap.remove(job.getId());
+                this.jobMap.remove(job.getId());
                 break;
         }
     }

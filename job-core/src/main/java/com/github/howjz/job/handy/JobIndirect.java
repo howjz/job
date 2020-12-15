@@ -5,7 +5,6 @@ import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.bean.NullJob;
 import com.github.howjz.job.bean.Snapshot;
 import com.github.howjz.job.constant.JobStatus;
-import com.github.howjz.job.constant.JobType;
 import com.github.howjz.job.operator.execute.Executable;
 import com.github.howjz.job.operator.genericjob.GenericJob;
 import org.apache.commons.lang.ObjectUtils;
@@ -19,7 +18,6 @@ import org.apache.commons.lang.ObjectUtils;
 public interface JobIndirect {
 
     default Job addTask(GenericJob task) throws Exception {
-        task.setType(JobType.TASK_JOB);
         Job superJob = (Job) this;
         JobHelper.manager.addTask(superJob, (Job) task);
         return superJob;
@@ -42,6 +40,11 @@ public interface JobIndirect {
         return this.getClass() != NullJob.class;
     }
 
+    // 基本无作用
+    default Job ready() throws Exception {
+        return (Job) this;
+    }
+
     default Job start() throws Exception {
         Job superJob = (Job) this;
         JobHelper.startJob(superJob);
@@ -51,14 +54,16 @@ public interface JobIndirect {
     default boolean isComplete() {
         Job superJob = (Job) this;
         Snapshot snapshot = superJob.getSnapshot();
-        return snapshot != null &&
-                ((snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getComplete()))
-                        || (snapshot.getTotal() == 0 && JobStatus.COMPLETE == superJob.getStatus()));
+        return (snapshot != null && ((snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getComplete())) || (snapshot.getTotal() == 0 && JobStatus.COMPLETE == superJob.getStatus())))
+                || (snapshot == null && superJob.getTasks().size() == 0 && JobStatus.COMPLETE == superJob.getStatus())
+                || superJob.getTasks().size() == 0;
     }
 
     default boolean isEnd() {
         Job superJob = (Job) this;
         Snapshot snapshot = superJob.getSnapshot();
-        return snapshot != null && snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getEnd());
+        return (snapshot != null && ((snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getEnd())) || (snapshot.getTotal() == 0 && JobStatus.COMPLETE == superJob.getStatus())))
+                || (snapshot == null && superJob.getTasks().size() == 0 && JobStatus.COMPLETE == superJob.getStatus())
+                || superJob.getTasks().size() == 0;
     }
 }

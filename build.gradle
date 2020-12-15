@@ -87,6 +87,10 @@ project(':job-spring-boot-starter:job-spring-boot-starter-redis') {
         // redis
         compile("org.apache.commons:commons-pool2:2.0")
         compile("org.springframework.boot:spring-boot-starter-data-redis:${springBootVersion}")
+
+        // json
+        compile("org.springframework.boot:spring-boot-starter-json:${springBootVersion}")
+        compile("com.alibaba:fastjson:1.2.67")
     }
 }
 
@@ -106,8 +110,8 @@ project(':job-spring-boot-samples') {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
     dependencies {
-        compile project(":job-spring-boot-starter:job-spring-boot-starter")
-//        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+        compile project(":job-spring-boot-starter:job-spring-boot-starter-redis")
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     }
 }
 

@@ -61,34 +61,26 @@ public class JobDataContext implements Serializable {
 
     // =============================== 操作器需要数据 ===============================
     // 状态触发操作数据
-    @JsonIgnore
     private NotifyData notifyData;
 
     // 错误触发操作数据
-    @JsonIgnore
     private ErrorData errorData;
 
     // 执行触发操作数据
-    @JsonIgnore
     private ExecuteData executeData;
 
     // 串联触发操作数据
-    @JsonIgnore
     private LinkData linkData;
 
     // then触发操作数据
-    @JsonIgnore
     private ThenData thenData;
 
     // join触发操作数据
-    @JsonIgnore
     private JoinData joinData;
 
     // cross触发操作数据
-    @JsonIgnore
     private CrossData crossData;
 
     // waiting触发操作数据
-    @JsonIgnore
     private WaitingData waitingData;
 }

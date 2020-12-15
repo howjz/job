@@ -4,7 +4,6 @@ import com.github.howjz.job.Job;
 import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.operator.config.ConfigBean;
 import com.github.howjz.job.operator.error.ErrorPolicy;
-import com.github.howjz.job.operator.notify.NotifyType;
 import com.github.howjz.job.operator.pool.PoolBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author zhangjh
@@ -24,22 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 @Service
 public class JobTestService {
-
-    /**
-     * 测试作业主动触发
-     *  PAUSE
-     *  STOP
-     *  REMOVE
-     * @return
-     * @throws Exception
-     */
-    public Job testNotifyJob() throws Exception {
-        TestNotifyJob job = new TestNotifyJob(8);
-        job.start();
-//        job.waiting();
-//        job.log("调用了waiting方法这个才会最后显示");
-        return job;
-    }
 
     /**
      * 测试规定线程池
@@ -162,44 +144,6 @@ public class JobTestService {
                     System.out.println("所有任务完成");
                 })
                 .start();
-    }
-
-    public void testSimpleJob() throws Exception {
-        int num = 10;
-        // 不用join测试
-        List<Integer> result1 = new CopyOnWriteArrayList<>();
-        new TestJob(num, result1)
-                .addTask(((job, task) -> {
-                    System.out.println(String.format("不用join时，会并行执行，不会等待结束，当前结果数为 [%s]", result1.size()));
-                }))
-                .start();
-
-        // 用join测试
-        List<Integer> result2 = new CopyOnWriteArrayList<>();
-        new TestJob(num, result2)
-                .join()
-                .addTask(((job, task) -> {
-                    System.out.println(String.format("使用join时，会串行执行，就会等待结束，当前结果数为 [%s]", result2.size()));
-                }))
-                .start();
-    }
-
-    /**
-     * 测试实现版link作业
-     * 步骤：
-     *  1、定义好全局要用到的 参数、结果
-     *  2、实现 Executable, Thenable，把 参数、结果 传入即可
-     * @return
-     * @throws Exception
-     */
-    public Job testSimpleTask() throws Exception {
-        System.out.println(String.format("当前线程：[%s]", Thread.currentThread().getName()));
-        int nums = 10;
-        List<Integer> result = new ArrayList<>(nums);
-        Job randomNumberJob = JobHelper.createJob()
-                .numTask(nums, i -> new TestTask(i, result))
-                .then(new TestTask(null, result));
-        return randomNumberJob.start();
     }
 
     /**

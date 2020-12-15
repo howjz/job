@@ -6,12 +6,9 @@ import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.constant.JobType;
 import com.github.howjz.job.operator.GenericOperator;
-import com.github.howjz.job.operator.notify.NotifyBean;
 import com.github.howjz.job.operator.notify.NotifyUtil;
-import javafx.concurrent.Task;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author zhangjh

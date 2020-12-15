@@ -1,10 +1,12 @@
 package com.github.howjz.job.operator.then;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.howjz.job.operator.OperatorData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,9 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author zhangjh
  * @date 2020/12/13 17:53
  */
+@Getter
+@Setter
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ThenData implements Serializable {
+public class ThenData extends OperatorData {
     private static final long serialVersionUID = 7658789327199668094L;
 
     /**
@@ -30,13 +34,11 @@ public class ThenData implements Serializable {
     /**
      * then等待map
      */
-    @JsonIgnore
     private Map<String, List<String>> waitMap = new ConcurrentHashMap<>();
 
     /**
      * then触发map
      */
-    @JsonIgnore
     private Map<String, List<String>> notifyMap = new ConcurrentHashMap<>();
 
 }

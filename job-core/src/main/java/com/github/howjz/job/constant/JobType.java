@@ -1,6 +1,7 @@
 package com.github.howjz.job.constant;
 
 import com.github.howjz.job.Job;
+import com.github.howjz.job.operator.genericjob.GenericJob;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public enum JobType {
             // 1、父ID为空，肯定为纯作业
             return JobType.JOB;
         } else {
-            if (jobExecutor.getTasks() == null || jobExecutor.getTasks().size() == 0) {
+            if (jobExecutor.getTasks() == null || jobExecutor.getTasks().size() == 0 && !(jobExecutor instanceof GenericJob)) {
                 // 2.1、父ID不为空，且不存在子任务，为 纯任务
                 return JobType.TASK;
             } else {

@@ -3,7 +3,6 @@ package com.github.howjz.job.handy;
 import com.github.howjz.job.Job;
 import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.operator.execute.Executable;
-import com.github.howjz.job.util.JsonUtil;
 
 import java.util.Collection;
 import java.util.Map;
