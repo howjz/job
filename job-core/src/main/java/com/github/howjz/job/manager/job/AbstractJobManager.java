@@ -5,14 +5,12 @@ import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.bean.NullJob;
 import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.operator.execute.Executable;
-import com.github.howjz.job.util.JobUtil;
+import com.github.howjz.job.operator.job.JobData;
+import com.github.howjz.job.operator.job.JobUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -24,22 +22,27 @@ import java.util.stream.Collectors;
 public abstract class AbstractJobManager implements JobManager {
 
     // ================================= 数据交换 =================================
+    private final JobDataContext dataContext;
+
     // 执行器ID
     private final String executorId;
 
     // 作业详情
     private final Map<String, Job> jobMap;
 
-    // 作业 - 任务详情
-    private final Map<String, Map<String, Job>> jobTaskMap;
+    // 任务详情
+    private final Map<String, Job> taskMap;
+
+    // 作业-任务关联详情
+    private final Map<String, Set<String>> jobTaskRelationMap;
 
     public AbstractJobManager(JobDataContext dataContext) {
+        this.dataContext = dataContext;
         this.executorId = dataContext.getExecutor().getExecutorId();
-        this.jobMap = dataContext.getJobMap();
-        this.jobTaskMap = dataContext.getJobTaskMap();
+        this.jobMap = dataContext.getJobData().getJobMap();
+        this.taskMap = dataContext.getJobData().getTaskMap();
+        this.jobTaskRelationMap = dataContext.getJobData().getJobTaskRelationMap();
     }
-
-    public abstract void calcSnapshot(Job job, Job task);
 
     @Override
     public abstract Job findJob(String jobId, boolean detail) throws Exception;
@@ -59,7 +62,6 @@ public abstract class AbstractJobManager implements JobManager {
         Job job = new Job();
         job.setIssuer(this.executorId);
         job.setStatus(JobStatus.READY);
-//        job.setId(StringUtils.isEmpty(jobId) ? String.valueOf(JobHelper.IdWorker.nextId()) : jobId);
         this.syncJob(job);
         return job;
     }
@@ -81,67 +83,67 @@ public abstract class AbstractJobManager implements JobManager {
     }
 
     @Override
-    public List<Job> getTasks(String jobId) throws Exception {
-        return new ArrayList<>(this.jobTaskMap.get(jobId).values());
+    public synchronized List<Job> getTasks(String jobId) throws Exception {
+        // 1、先查找关联
+        Set<String> taskIds = this.jobTaskRelationMap.get(jobId);
+        if (taskIds == null) {
+            return Collections.emptyList();
+        }
+        return this.taskMap.entrySet()
+                .stream()
+                .filter(entry -> taskIds.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public void handleAddTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleWaitTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleReadyTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleRunningTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleCompleteTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleExceptionTask(Job job, Job task, Exception exception) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleSkipTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handlePauseTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleStopTask(Job job, Job task) throws Exception {
-        this.calcSnapshot(job, task);
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 
     @Override
     public void handleTask(Job job, Job task, JobStatus status) throws Exception {
-        this.calcSnapshot(job, task);
-    }
-
-    // 获取作业-任务详情
-    protected Map<String, Job> getHistoryTaskMap(Job job) {
-        Map<String, Job> oldTaskMap = new HashMap<>(0);
-        if (!this.jobTaskMap.containsKey(job.getId())) {
-            this.jobTaskMap.put(job.getId(), new HashMap<>(0));
-        }
-        oldTaskMap = this.jobTaskMap.get(job.getId());
-        return oldTaskMap;
+        JobUtil.calcSnapshot(dataContext, job, task);
     }
 }

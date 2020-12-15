@@ -3,15 +3,12 @@ package com.github.howjz.job.manager;
 import com.github.howjz.job.Job;
 import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.bean.NullJob;
-import com.github.howjz.job.bean.Snapshot;
-import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.manager.job.AbstractJobManager;
-import com.github.howjz.job.util.JobUtil;
+import com.github.howjz.job.operator.job.JobUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author zhangjh
@@ -28,9 +25,8 @@ public class GenericJobManager extends AbstractJobManager {
     public Job findJob(String jobId, boolean detail) throws Exception {
         Job job = this.getJobMap().get(jobId);
         if (job != null) {
-            if (job.getTasks().size() > 0) {
-                this.calcSnapshot(job, job.getTasks().get(0));
-            }
+            job.setTasks(new ArrayList<>(JobUtil.getHistoryTaskMap(this.getDataContext(), jobId).values()));
+            JobUtil.calcSnapshot(this.getDataContext(), job, job.getTasks().get(0));
             if(!detail) {
                 // 需要返回一个复制的 job
                 return JobUtil.cloneJob(job);
@@ -41,45 +37,6 @@ public class GenericJobManager extends AbstractJobManager {
         return job;
     }
 
-    @Override
-    public void calcSnapshot(Job job, Job task) {
-        if (job == null) {
-            log.error("当前作业为空");
-            return;
-        }
-        Map<String, Job> jobTaskMap = this.getHistoryTaskMap(job);
-        Snapshot snapshot = Snapshot.fromJobTaskMap(job, jobTaskMap);
-        job.setSnapshot(snapshot);
-        long allExceptionCount = snapshot.getException();
-        long allStopCount = snapshot.getStop();
-        long allTotalCount = snapshot.getTotal();
-        long allCompleteCount = snapshot.getComplete();
-        long allEndCount = snapshot.getEnd();
-        if (allTotalCount == 0) {
-            return;
-        }
-        job.setComplete(allCompleteCount);
-        job.setEnd(allEndCount);
-        job.setTotal(allTotalCount);
-        // 1、计算具体进度
-        job.setProgress(Math.round(job.getComplete().floatValue() / job.getTotal().intValue() * 100));
-        // 2、进行总计数
-        if (allTotalCount == allEndCount) {
-            job.set_waited(false);
-            job.setProgress(100);
-            if (job.getEndTime() == null) {
-                job.setEndTime(new Date());
-            }
-            if (allExceptionCount > 0) {
-                job.setStatus(JobStatus.EXCEPTION);
-            } else if (allStopCount > 0) {
-                job.setStatus(JobStatus.STOP);
-            } else {
-                job.setStatus(JobStatus.COMPLETE);
-            }
-        }
-    }
-
     // 同步作业状态
     @Override
     public void syncJob(Job job) throws Exception {
@@ -88,24 +45,33 @@ public class GenericJobManager extends AbstractJobManager {
 
     // 同步任务状态
     @Override
-    public void syncTask(Job job, Job task) throws Exception {
-        // 1、查询旧的任务详情
-        Map<String, Job> historyTaskMap = this.getHistoryTaskMap(job);
+    public synchronized void syncTask(Job job, Job task) throws Exception {
+        this.addRelation(job.getId(), task.getId());
         // 2、同步当前任务详情
-        historyTaskMap.put(task.getId(), task);
-        this.getJobTaskMap().put(job.getId(), historyTaskMap);
+        this.getTaskMap().put(task.getId(), task);
     }
 
     // 同步大量任务详情
     @Override
-    public void syncTasks(Job job, List<Job> tasks) throws Exception {
+    public synchronized void syncTasks(Job job, List<Job> tasks) throws Exception {
         // 1、查询旧的任务详情
-        Map<String, Job> historyTaskMap = this.getHistoryTaskMap(job);
+        this.addRelations(job.getId(), tasks.stream().map(Job::getId).collect(Collectors.toSet()));
         // 2、同步当前任务详情
-        for(Job task: tasks) {
-            historyTaskMap.put(task.getId(), task);
+        this.getTaskMap().putAll(tasks.stream()
+                .collect(Collectors.toMap(Job::getId, t -> t)));
+    }
+
+    private synchronized void addRelations(String jobId, Set<String> taskIds) {
+        // 1、同步关联
+        Set<String> existTaskIds = this.getJobTaskRelationMap().get(jobId);
+        if (existTaskIds != null) {
+            taskIds.addAll(existTaskIds);
         }
-        this.getJobTaskMap().put(job.getId(), historyTaskMap);
+        this.getJobTaskRelationMap().put(jobId, taskIds);
+    }
+
+    private void addRelation(String jobId, String taskId) {
+        this.addRelations(jobId, new HashSet<>(Collections.singleton(taskId)));
     }
 
 }

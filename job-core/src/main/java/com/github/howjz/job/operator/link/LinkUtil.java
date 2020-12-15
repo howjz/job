@@ -2,8 +2,8 @@ package com.github.howjz.job.operator.link;
 
 import com.github.howjz.job.Job;
 import com.github.howjz.job.constant.JobType;
+import com.github.howjz.job.operator.job.JobUtil;
 import com.github.howjz.job.util.DependUtil;
-import com.github.howjz.job.util.JobUtil;
 
 import java.util.HashMap;
 import java.util.List;

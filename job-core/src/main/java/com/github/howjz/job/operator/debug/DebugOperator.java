@@ -45,10 +45,10 @@ public class DebugOperator extends GenericOperator<ObjectUtils.Null> {
     @Override
     public void handleRun(GenericExecutorManager executorManager) throws Exception {
         if (this.debugProperties.isLog()) {
-            Thread.sleep(this.debugProperties.getSleep());
-            System.out.println("==========================handleRun=========================");
-            System.out.println(String.format("剩余任务个数：                            [%s]", executorManager.getQueueTaskCount()));
-            System.out.println("==========================handleRun=========================");
+//            Thread.sleep(this.debugProperties.getSleep());
+//            System.out.println("==========================handleRun=========================");
+//            System.out.println(String.format("剩余任务个数：                            [%s]", executorManager.getQueueTaskCount()));
+//            System.out.println("==========================handleRun=========================");
         }
         this.debugProperties.setLastTime(new Date());
         this.debugProperties.setTaskCount(executorManager.getQueueTaskCount());
@@ -57,12 +57,12 @@ public class DebugOperator extends GenericOperator<ObjectUtils.Null> {
     @Override
     public synchronized void handleCompleteTask(Job job, Job task) throws Exception {
         if (this.debugProperties.isLog()) {
-            System.out.println("=====================handleCompleteTask=====================");
-            System.out.println(String.format("作业主键：                               [%s]", job.getId()));
-            System.out.println(String.format("作业类型：                               [%s]", job.getType()));
-            System.out.println(String.format("作业进度：                               [%s / %s]", job.getSnapshot().getComplete(), job.getSnapshot().getTotal()));
-            System.out.println("=====================handleCompleteTask=====================");
-            Thread.sleep(this.debugProperties.getSleep());
+//            System.out.println("=====================handleCompleteTask=====================");
+//            System.out.println(String.format("作业主键：                               [%s]", job.getId()));
+//            System.out.println(String.format("作业类型：                               [%s]", job.getType()));
+//            System.out.println(String.format("作业进度：                               [%s / %s]", job.getSnapshot().getComplete(), job.getSnapshot().getTotal()));
+//            System.out.println("=====================handleCompleteTask=====================");
+//            Thread.sleep(this.debugProperties.getSleep());
         }
     }
 
@@ -80,14 +80,14 @@ public class DebugOperator extends GenericOperator<ObjectUtils.Null> {
     @Override
     public synchronized void handleTask(Job job, Job task, JobStatus status) throws Exception {
         if (this.debugProperties.isLog()) {
-            System.out.println("=========================handleTask=========================");
-            System.out.println(String.format("当前公有线程池：                          [ %s / %s ]", this.publicPool.getCurrentSize(), this.publicPool.getTotalSize()));
-            PoolBean poolBean = this.privatePools.get(job.getId());
-            if (poolBean != null) {
-                System.out.println(String.format("当前私有线程池 [%s]：     [ %s / %s ]", job.getId(), poolBean.getCurrentSize(), poolBean.getTotalSize()));
-            }
-            System.out.println("=========================handleTask=========================");
-            Thread.sleep(this.debugProperties.getSleep());
+//            System.out.println("=========================handleTask=========================");
+//            System.out.println(String.format("当前公有线程池：                          [ %s / %s ]", this.publicPool.getCurrentSize(), this.publicPool.getTotalSize()));
+//            PoolBean poolBean = this.privatePools.get(job.getId());
+//            if (poolBean != null) {
+//                System.out.println(String.format("当前私有线程池 [%s]：     [ %s / %s ]", job.getId(), poolBean.getCurrentSize(), poolBean.getTotalSize()));
+//            }
+//            System.out.println("=========================handleTask=========================");
+//            Thread.sleep(this.debugProperties.getSleep());
         }
     }
 }

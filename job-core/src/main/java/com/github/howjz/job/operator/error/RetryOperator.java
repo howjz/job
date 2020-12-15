@@ -5,6 +5,7 @@ import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.operator.GenericOperator;
 import com.github.howjz.job.operator.OperatorEnableFlag;
+import com.github.howjz.job.operator.job.JobUtil;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Map;
@@ -41,7 +42,7 @@ public class RetryOperator extends GenericOperator<ObjectUtils.Null> {
             // 1、将任务重新设置为等待中
             JobHelper.manager.handleWaitTask(job, task);
             // 2、快照计算
-            JobHelper.manager.getJobManager().calcSnapshot(job, task);
+            JobUtil.calcSnapshot(this.getDataContext(), job, task);
             // 3、移除错误信息
             job.getExceptions().remove(task.getId());
             // 4、将任务ID重新设置入队列

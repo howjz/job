@@ -5,6 +5,7 @@ import com.github.howjz.job.operator.Operator;
 import com.github.howjz.job.operator.cross.CrossData;
 import com.github.howjz.job.operator.error.ErrorData;
 import com.github.howjz.job.operator.execute.ExecuteData;
+import com.github.howjz.job.operator.job.JobData;
 import com.github.howjz.job.operator.join.JoinData;
 import com.github.howjz.job.operator.link.LinkData;
 import com.github.howjz.job.operator.notify.NotifyData;
@@ -35,14 +36,6 @@ public class JobDataContext implements Serializable {
     // 执行器信息列表
     private Map<String, Executor> executors;
 
-    // 作业详情列表
-    @JsonIgnore
-    private Map<String, Job> jobMap;
-
-    // 作业任务详情列表
-    @JsonIgnore
-    private Map<String, Map<String, Job>> jobTaskMap;
-
     // 任务队列
     @JsonIgnore
     private BlockingQueue<String> taskQueue;
@@ -60,6 +53,9 @@ public class JobDataContext implements Serializable {
     private List<Operator<?>> operators;
 
     // =============================== 操作器需要数据 ===============================
+    // 作业触发操作数据
+    private JobData jobData;
+
     // 状态触发操作数据
     private NotifyData notifyData;
 

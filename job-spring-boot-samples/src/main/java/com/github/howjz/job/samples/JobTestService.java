@@ -23,6 +23,44 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class JobTestService {
 
+    public Job simpleJobThenJob () throws Exception {
+        return JobHelper.createJob()
+                .numTask(10, i -> ((job, task) -> {
+                    int result = new Random().nextInt(1000);
+                    Thread.sleep(result);
+                    task.setResult(result);
+                    System.out.printf("任务 1%s 完成%n", i);
+                }))
+                .then((job -> {
+                    System.out.println("作业组1完成");
+                }))
+                .join()
+                .numTask(5, i -> ((job, task) -> {
+                    int result = new Random().nextInt(500);
+                    Thread.sleep(result);
+                    task.setResult(result);
+                    System.out.printf("任务 2%s 完成%n", i);
+                }))
+                .then((job -> {
+                    System.out.println("作业组2完成");
+                }))
+                .join()
+                .numTask(3, i -> ((job, task) -> {
+                    int result = new Random().nextInt(500);
+                    Thread.sleep(result);
+                    task.setResult(result);
+                    System.out.printf("任务 3%s 完成%n", i);
+                }))
+                .then((job -> {
+                    System.out.println("作业组3完成");
+                }))
+                .allThen((job -> {
+                    System.out.println("作业完成");
+                    job.remove();
+                }))
+                .start();
+    }
+
     /**
      * 测试规定线程池
      * @return

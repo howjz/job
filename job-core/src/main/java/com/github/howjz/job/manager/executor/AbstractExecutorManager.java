@@ -288,7 +288,7 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
             this.handleStartJob(job);
         }
         // 5、校验
-        if (job.isEnd()) {
+        if (job.isEnd() || job.isComplete()) {
             this.handleCompleteJob(job);
         }
     }
@@ -349,27 +349,32 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
 
     @Override
     public void startTasks(Job job, List<Job> tasks) throws Exception {
+        this.syncTasks(job, tasks);
         this.taskManager.startTasks(job, tasks);
     }
 
     @Override
     public void startTask(Job job, Job task) throws Exception {
+        this.syncTask(job, task);
         this.taskManager.startTask(job, task);
     }
 
     @Override
     public void pauseTask(Job job, Job task) throws Exception {
         this.taskManager.pauseTask(job, task);
+        this.syncTask(job, task);
     }
 
     @Override
     public void stopTask(Job job, Job task) throws Exception {
         this.taskManager.stopTask(job, task);
+        this.syncTask(job, task);
     }
 
     @Override
     public void removeTask(Job job, Job task) throws Exception {
         this.taskManager.removeTask(job, task);
+        this.syncTask(job, task);
     }
 
     @Override

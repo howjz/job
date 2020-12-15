@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Job implements Serializable, JobOperable, JobExpressible, JobIndirect {
     private static final long serialVersionUID = 3808845971230379160L;
 

@@ -35,7 +35,7 @@ public class ThenOperator extends GenericOperator<Thenable> {
     }
 
     @Override
-    public void handleOperate(Job jobOrTask, Thenable operator) {
+    public synchronized void handleOperate(Job jobOrTask, Thenable operator) {
         ThenBean thenBean = this.thenBeanMap.get(jobOrTask.getId());
         if (thenBean == null) {
             log.error(String.format("作业[%s]的then中间数据不存在", jobOrTask.getId()));
@@ -45,12 +45,12 @@ public class ThenOperator extends GenericOperator<Thenable> {
     }
 
     @Override
-    public void handleCreateJob(Job job) {
+    public synchronized void handleCreateJob(Job job) {
         this.thenBeanMap.put(job.getId(), new ThenBean(this.getDataContext().getExecutor().getExecutorId()));
     }
 
     @Override
-    public void handleAddTask(Job job, Job task) throws Exception {
+    public synchronized void handleAddTask(Job job, Job task) throws Exception {
         ThenBean thenBean = this.thenBeanMap.get(job.getId());
         if (thenBean == null) {
             log.error(String.format("作业[%s]的then中间数据不存在", job.getId()));
@@ -60,7 +60,7 @@ public class ThenOperator extends GenericOperator<Thenable> {
     }
 
     @Override
-    public void handleStartJob(Job job) throws Exception {
+    public synchronized void handleStartJob(Job job) throws Exception {
         ThenBean thenBean = this.thenBeanMap.get(job.getId());
         if (thenBean == null) {
             log.error(String.format("作业[%s]的then中间数据不存在", job.getId()));
@@ -71,11 +71,9 @@ public class ThenOperator extends GenericOperator<Thenable> {
     }
 
     @Override
-    public void handleCompleteTask(Job job, Job task) throws Exception {
+    public synchronized void handleCompleteTask(Job job, Job task) throws Exception {
         // 1、移除 notify
-        DependUtil.notifyRemoveWait(task, this.waitMap, this.notifyMap);
-        // 2、根据 thenId 判断
-        List<String> thenIds = this.notifyMap.get(task.getId());
+        List<String> thenIds = DependUtil.notifyRemoveWait(task, this.waitMap, this.notifyMap);
         boolean remove = false;
         if (thenIds != null && thenIds.size() > 0) {
             for(String thenId: thenIds) {

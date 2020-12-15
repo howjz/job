@@ -27,10 +27,6 @@ public class JobKey {
 
         public static final String EXECUTORS = "how:job:executors";
 
-        public static final String JOB_MAP = "how:job:job:map";
-
-        public static final String JOB_TASK_MAP = "how:job:job:task:map";
-
         public static final String TASK_QUEUE = "how:job:task:queue";
 
         public static final String EXECUTOR_POOL = "how:job:executor:job";
@@ -43,6 +39,11 @@ public class JobKey {
         // ================= 操作相关数据 =================
         public static final String OPERATOR_NOTIFY_DATA = "how:job:operator:notify:data";
         public static final String OPERATOR_NOTIFY_DATA_NOTIFY_MAP = "how:job:operator:notify:data:map:notify";
+
+        public static final String OPERATOR_JOB_DATA = "how:job:operator:job:data";
+        public static final String OPERATOR_JOB_DATA_JOB_MAP = "how:job:operator:job:data:map:job";
+        public static final String OPERATOR_JOB_DATA_JOB_TASK_RELATION_MAP = "how:job:operator:job:data:map:jobTaskRelation";
+        public static final String OPERATOR_JOB_DATA_TASK_MAP = "how:job:operator:job:data:map:task";
 
         public static final String OPERATOR_ERROR_DATA = "how:job:operator:error:data";
         public static final String OPERATOR_ERROR_DATA_ALWAYS_RETRY_SET = "how:job:operator:error:data:set:alwaysRetry";

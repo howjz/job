@@ -1,5 +1,6 @@
 package com.github.howjz.job.autoconfigure;
 
+import com.alibaba.fastjson.support.spring.FastJsonRedisSerializer;
 import com.github.howjz.job.Executor;
 import com.github.howjz.job.Job;
 import com.github.howjz.job.constant.JobKey;
@@ -7,6 +8,7 @@ import com.github.howjz.job.operator.cross.CrossData;
 import com.github.howjz.job.operator.cross.CrossType;
 import com.github.howjz.job.operator.error.ErrorData;
 import com.github.howjz.job.operator.execute.ExecuteData;
+import com.github.howjz.job.operator.job.JobData;
 import com.github.howjz.job.operator.join.JoinData;
 import com.github.howjz.job.operator.link.LinkData;
 import com.github.howjz.job.operator.notify.NotifyData;
@@ -21,6 +23,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.data.redis.support.collections.DefaultRedisList;
@@ -30,6 +33,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,7 +59,7 @@ public class RedisJobAutoConfiguration extends GenericJobAutoConfiguration {
     public RedisTemplate<String, Object> redisObjectTemplate(){
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
-        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        RedisSerializer<Object> jackson2JsonRedisSerializer = RedisSerializer.json();
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
@@ -77,6 +81,15 @@ public class RedisJobAutoConfiguration extends GenericJobAutoConfiguration {
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
+    }
+
+    @Override
+    public JobData operatorJobData() {
+        JobData jobData = new JobData();
+        jobData.setJobMap(new DefaultRedisMap<String, Job>(JobKey.Context.OPERATOR_JOB_DATA_JOB_MAP, redisObjectTemplate()));
+        jobData.setJobTaskRelationMap(new DefaultRedisMap<String, Set<String>>(JobKey.Context.OPERATOR_JOB_DATA_JOB_TASK_RELATION_MAP, redisObjectTemplate()));
+        jobData.setTaskMap(new DefaultRedisMap<String, Job>(JobKey.Context.OPERATOR_JOB_DATA_TASK_MAP, redisObjectTemplate()));
+        return jobData;
     }
 
     @Override
@@ -147,15 +160,6 @@ public class RedisJobAutoConfiguration extends GenericJobAutoConfiguration {
         return new DefaultRedisMap<String, Executor>(JobKey.Context.EXECUTORS, redisObjectTemplate());
     }
 
-    @Override
-    public Map<String, Job> jobMap() {
-        return new DefaultRedisMap<String, Job>(JobKey.Context.JOB_MAP, redisObjectTemplate());
-    }
-
-    @Override
-    public Map<String, Map<String, Job>> jobTaskMap() {
-        return new DefaultRedisMap<String, Map<String, Job>>(JobKey.Context.JOB_TASK_MAP, redisObjectTemplate());
-    }
 
     @Override
     public BlockingQueue<String> taskQueue() {

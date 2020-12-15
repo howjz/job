@@ -9,6 +9,7 @@ import com.github.howjz.job.operator.GenericOperator;
 import com.github.howjz.job.operator.OperatorEnableFlag;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author zhangjh
@@ -18,15 +19,9 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
 
     private final Map<String, Integer> notifyMap;
 
-    private final Map<String, Job> jobMap;
-
-    private final Map<String, Map<String, Job>> jobTaskMap;
-
     public NotifyOperator(JobDataContext dataContext) {
         super(dataContext);
         this.notifyMap = dataContext.getNotifyData().getNotifyMap();
-        this.jobMap = dataContext.getJobMap();
-        this.jobTaskMap = dataContext.getJobTaskMap();
     }
 
     @Override
@@ -84,15 +79,6 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
                 // 主动触发 remove
                 Job job = operator.getJob();
                 this.getExecutorManager().handleRemoveJob(job);
-                for (Job task : job.getTasks()) {
-                    if (JobType.TASK_JOB == task.getType()) {
-                        this.getExecutorManager().handleRemoveJob(task);
-                        this.jobTaskMap.remove(task.getId());
-                        this.jobMap.remove(task.getId());
-                    }
-                }
-                this.jobTaskMap.remove(job.getId());
-                this.jobMap.remove(job.getId());
                 break;
         }
     }

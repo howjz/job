@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -26,16 +27,21 @@ public abstract class AbstractTaskManager implements TaskManager {
     // 执行器ID
     private final String executorId;
 
-    // 作业 - 任务详情
-    private final Map<String, Map<String, Job>> jobTaskMap;
-
     // 任务ID队列
     private final BlockingQueue<String> taskQueue;
+
+    private final Map<String, Job> jobMap;
+
+    private final Map<String, Set<String>> jobTaskRelationMap;
+
+    private final Map<String, Job> taskMap;
 
     public AbstractTaskManager(JobDataContext dataContext) {
         this.executorId = dataContext.getExecutor().getExecutorId();
         this.taskQueue = dataContext.getTaskQueue();
-        this.jobTaskMap = dataContext.getJobTaskMap();
+        this.jobMap = dataContext.getJobData().getJobMap();
+        this.jobTaskRelationMap = dataContext.getJobData().getJobTaskRelationMap();
+        this.taskMap = dataContext.getJobData().getTaskMap();
     }
 
     @Override
@@ -46,11 +52,7 @@ public abstract class AbstractTaskManager implements TaskManager {
 
     @Override
     public synchronized Job findTask(String jobId, String taskId) throws Exception {
-        Map<String, Job> stringZJobMap = this.jobTaskMap.get(jobId);
-        if (stringZJobMap != null) {
-            return stringZJobMap.get(taskId);
-        }
-        return null;
+        return this.taskMap.get(taskId);
     }
 
     @Override

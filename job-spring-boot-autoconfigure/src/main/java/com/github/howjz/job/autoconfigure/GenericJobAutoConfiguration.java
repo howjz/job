@@ -18,6 +18,8 @@ import com.github.howjz.job.operator.error.RetryOperator;
 import com.github.howjz.job.operator.execute.ExecuteData;
 import com.github.howjz.job.operator.execute.ExecuteOperator;
 import com.github.howjz.job.operator.genericjob.GenericJobOperator;
+import com.github.howjz.job.operator.job.JobData;
+import com.github.howjz.job.operator.job.JobOperator;
 import com.github.howjz.job.operator.join.JoinData;
 import com.github.howjz.job.operator.join.JoinOperator;
 import com.github.howjz.job.operator.link.LinkData;
@@ -73,6 +75,11 @@ public class GenericJobAutoConfiguration {
 
     @Value("${server.port:8080}")
     private String port;
+
+    @Bean(JobKey.Context.OPERATOR_JOB_DATA)
+    public JobData operatorJobData() {
+        return new JobData();
+    }
 
     /**
      * 1.1、定义 状态触发操作数据
@@ -146,6 +153,7 @@ public class GenericJobAutoConfiguration {
         return new WaitingData();
     }
 
+
     /**
      * 1.9、定义 数据上下文
      *  注意：
@@ -156,6 +164,7 @@ public class GenericJobAutoConfiguration {
     @Bean(JobKey.Context.INSTANCE)
     public JobDataContext dataContext() {
         JobDataContext dataContext = new JobDataContext();
+        dataContext.setJobData(operatorJobData());
         dataContext.setNotifyData(operatorNotifyData());
         dataContext.setErrorData(operatorErrorData());
         dataContext.setExecuteData(operatorExecuteData());
@@ -186,24 +195,6 @@ public class GenericJobAutoConfiguration {
      */
     @Bean(JobKey.Context.EXECUTORS)
     public Map<String, Executor> executors() {
-        return new ConcurrentHashMap<>();
-    }
-
-    /**
-     * 1.12、定义 作业详情列表
-     * @return  作业详情列表
-     */
-    @Bean(JobKey.Context.JOB_MAP)
-    public Map<String, Job> jobMap() {
-        return new ConcurrentHashMap<>();
-    }
-
-    /**
-     * 1.13、定义 作业任务详情列表
-     * @return  作业任务详情列表
-     */
-    @Bean(JobKey.Context.JOB_TASK_MAP)
-    public Map<String, Map<String, Job>> jobTaskMap() {
         return new ConcurrentHashMap<>();
     }
 
@@ -275,6 +266,7 @@ public class GenericJobAutoConfiguration {
     @Bean(JobKey.Context.OPERATORS)
     public List<Operator<?>> operators() {
         JobDataContext dataContext = dataContext();
+        JobOperator jobOperator = new JobOperator(dataContext);
         ConfigOperator configOperator = new ConfigOperator(dataContext);
         AlwaysRetryOperator alwaysRetryOperator = new AlwaysRetryOperator(dataContext);
         RestartOperator restartOperator = new RestartOperator(dataContext);
@@ -292,7 +284,7 @@ public class GenericJobAutoConfiguration {
         ExecuteOperator executeOperator = new ExecuteOperator(dataContext);
         DebugOperator debugOperator = new DebugOperator(dataContext);
         return Arrays.asList(
-          configOperator, alwaysRetryOperator, restartOperator, notifyOperator, retryOperator, errorOperator, linkOperator,
+          jobOperator,configOperator, alwaysRetryOperator, restartOperator, notifyOperator, retryOperator, errorOperator, linkOperator,
           thenOperator, allThenOperator, joinOperator, genericJobOperator, poolOperator, waitingOperator, crossOperator, executeOperator, debugOperator
         );
     }
@@ -306,8 +298,6 @@ public class GenericJobAutoConfiguration {
         JobDataContext dataContext = dataContext();
         dataContext.setExecutor(executor());
         dataContext.setExecutors(executors());
-        dataContext.setJobMap(jobMap());
-        dataContext.setJobTaskMap(jobTaskMap());
         dataContext.setTaskQueue(taskQueue());
         dataContext.setExecutorPool(executorPool());
         dataContext.setSpareExecutorPool(spareExecutorPool());

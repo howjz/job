@@ -28,6 +28,7 @@ public interface Operator<T> extends StatusListener, ExecutorListener {
     @EqualsAndHashCode(callSuper = false)
     public class Operate implements Serializable {
         private static final long serialVersionUID = 1099672046795581966L;
+        public static final Operate JOB = new Operate("JOB");
         public static final Operate NOTIFY = new Operate("NOTIFY");
         public static final Operate RESTART = new Operate("RESTART");
         public static final Operate WAITING = new Operate("WAITING");

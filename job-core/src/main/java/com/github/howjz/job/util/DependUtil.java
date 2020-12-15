@@ -17,11 +17,11 @@ public class DependUtil {
      * @param waitMap   等待map
      * @param notifyMap 触发map
      */
-    public static synchronized void notifyRemoveWait(Job task, Map<String, List<String>> waitMap, Map<String, List<String>> notifyMap) {
+    public static synchronized List<String> notifyRemoveWait(Job task, Map<String, List<String>> waitMap, Map<String, List<String>> notifyMap) {
         String taskId = task.getId();
-        if (notifyMap.containsKey(taskId)) {
+        List<String> waitTaskIds = notifyMap.remove(taskId);
+        if (waitTaskIds != null && waitTaskIds.size() > 0) {
             // 1、获取当前任务需要触发join的任务
-            List<String> waitTaskIds = notifyMap.get(taskId);
             for(String waitTaskId: waitTaskIds) {
                 // 2、从触发join的任务移除当前任务ID的依赖
                 if (waitMap.containsKey(waitTaskId)) {
@@ -35,6 +35,7 @@ public class DependUtil {
                 }
             }
         }
+        return waitTaskIds;
     }
 
     /**

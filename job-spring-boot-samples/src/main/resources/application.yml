@@ -4,14 +4,16 @@ how:
     type: redis
     debug:
       sleep: 0
-      log: false
+      log: true
     pool:
       size: 10
 
 server:
-  port: 15000
+  port: 18000
 
 spring:
+  profiles:
+    active: dev
   redis:
     database: 0
     host: 192.168.99.100

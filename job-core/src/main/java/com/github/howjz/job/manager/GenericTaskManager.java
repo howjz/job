@@ -9,6 +9,7 @@ import com.github.howjz.job.manager.task.AbstractTaskManager;
 import com.github.howjz.job.operator.execute.Executable;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -62,16 +63,12 @@ public class GenericTaskManager extends AbstractTaskManager {
             throw new RuntimeException("当前任务未结束，无法移除");
         }
         // 1、移除依赖
-        Map<String, Job> stringZJobMap = this.getJobTaskMap().get(task.getParentId());
-        if (stringZJobMap != null) {
-            stringZJobMap.remove(task.getId());
-            this.getJobTaskMap().put(task.getParentId(), stringZJobMap);
+        Set<String> taskIds = this.getJobTaskRelationMap().get(job.getId());
+        if (taskIds != null) {
+            taskIds.remove(task.getId());
+            this.getJobTaskRelationMap().put(job.getId(), taskIds);
         }
-        // 2、移除父作业中的数据
-        job.setTasks(job.getTasks()
-                .stream()
-                .filter(t -> !task.getId().equals(t.getId()))
-                .collect(Collectors.toList()));
+        this.getTaskMap().remove(task.getId());
         JobHelper.manager.syncJob(job);
     }
 
