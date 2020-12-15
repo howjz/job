@@ -1,7 +1,10 @@
 package com.github.howjz.job.samples.file;
 
 import com.github.howjz.job.Job;
+import com.github.howjz.job.operator.config.ConfigBean;
+import com.github.howjz.job.operator.cross.CrossType;
 import com.github.howjz.job.operator.genericjob.GenericJob;
+import com.github.howjz.job.operator.pool.PoolBean;
 import com.github.howjz.job.util.HttpUtil;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -10,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +21,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ *  多线程分块下载作业
+ *  话说
+ *      RandomAccessFile tmpAccessFile = new RandomAccessFile(this.tempFile, "rw")
+ *  这个居然支持多线程追加
  * @author zhangjh
  * @date 2020/12/14 13:41
  */
@@ -42,10 +50,17 @@ public class DownloadJob extends GenericJob<DownloadFile> {
         this.chunkComplete = new ConcurrentHashMap<>();
         this.tempFile = new File(file.getFileName() + ".tmep");
         this.targetFile = new File(file.getFileName());
-        this.flagPath = FilenameUtils.getFullPath(file.getFileName()) + FilenameUtils.getBaseName(file.getFileName()) + "/flag/";
+        this.flagPath = FilenameUtils.getFullPath(file.getFileName()) + FilenameUtils.getBaseName(file.getFileName());
         if (!this.tempFile.exists()) {
             FileUtils.touch(tempFile);
         }
+        this.init();
+    }
+
+    @Override
+    public void handleCreateJob(Job job) throws Exception {
+        job.pool(PoolBean.PRIVATE(10));
+        job.cross(CrossType.DISABLE);
     }
 
     @Override
@@ -57,8 +72,17 @@ public class DownloadJob extends GenericJob<DownloadFile> {
         long chunks = (contentLength / file.getChunkSize()) + 1;
         file.setFileSize(contentLength);
         file.setChunks(chunks);
+        file.setFileSize(contentLength);
+        if (this.targetFile.exists() && this.targetFile.length() == contentLength) {
+            // 1.1、如果文件已存在 并且长度相等，直接完成
+            this.complete();
+            return Collections.emptyList();
+        } else {
+            // 1.2、移除旧文件
+            FileUtils.forceDeleteOnExit(this.targetFile);
+        }
         // 3、生成分块编号列表
-        System.out.println("文件划分分块数：" + (chunks));
+        System.out.println(String.format("文件 [%s] 划分分块数： [%s]", FilenameUtils.getName(file.getFileName()), chunks));
         return Stream
                 .iterate(0, n -> n + 1)
                 .limit(chunks)
@@ -79,7 +103,7 @@ public class DownloadJob extends GenericJob<DownloadFile> {
         int chunkSize = (int) param;
         DownloadFile file = (DownloadFile) job.getParam();
         // 2、生成下载标记文件
-        File flagFile = new File(flagPath + chunkSize);
+        File flagFile = new File(flagPath + "/flag_" + chunkSize + ".txt");
         if (!flagFile.exists()) {
             FileUtils.touch(flagFile);
         }
@@ -129,7 +153,7 @@ public class DownloadJob extends GenericJob<DownloadFile> {
                 long complete = progress - originStartIndex;
                 this.chunkComplete.put(chunkSize, complete);
                 file.setCompleteSize(this.chunkComplete.values().stream().mapToLong(i->i).sum());
-//                System.out.println(String.format("文件进度： [ %s / %s ]", file.getCompleteSize(), file.getFileSize()));
+                System.out.println(String.format("文件分块: [%s:%s]  总进度： [ %s / %s ]", FilenameUtils.getName(file.getFileName()), chunkSize, file.getCompleteSize(), file.getFileSize()));
             }
         } catch (IOException e) {
             return null;
@@ -137,7 +161,7 @@ public class DownloadJob extends GenericJob<DownloadFile> {
             //关闭资源
             close(cacheAccessFile, is, resBody, tmpAccessFile);
         }
-        System.out.println("分块 " + chunkSize + " 下载完成");
+        System.out.println(String.format("文件 [%s] 分块[%s] 下载完成", FilenameUtils.getName(file.getFileName()), chunkSize));
         return flagFile.getPath();
     }
 
@@ -183,11 +207,19 @@ public class DownloadJob extends GenericJob<DownloadFile> {
     @Override
     public void then(Job job) throws Exception {
         // 下载完毕后，重命名目标文件名
-        if (this.targetFile.exists()) {
+        DownloadFile file = (DownloadFile) job.getParam();
+        if (this.targetFile.exists() && this.targetFile.length() != file.getFileSize()) {
             FileUtils.forceDelete(this.targetFile);
         }
-        FileUtils.forceDelete(new File(flagPath));
-        this.tempFile.renameTo(targetFile);
-        System.out.println("文件下载完成");
+        if (!this.targetFile.exists()) {
+            this.tempFile.renameTo(targetFile);
+        }
+        if (this.tempFile.exists()) {
+            FileUtils.forceDelete(this.tempFile);
+        }
+        if (new File(flagPath).exists()) {
+            FileUtils.forceDelete(new File(flagPath));
+        }
+        System.out.println(String.format("文件 [%s] 下载完成", FilenameUtils.getName(file.getFileName())));
     }
 }

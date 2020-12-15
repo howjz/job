@@ -9,6 +9,7 @@ import com.github.howjz.job.manager.GenericExecutorManager;
 import com.github.howjz.job.operator.Operator;
 import com.github.howjz.job.operator.config.ConfigOperator;
 import com.github.howjz.job.operator.cross.CrossData;
+import com.github.howjz.job.operator.cross.CrossOperator;
 import com.github.howjz.job.operator.debug.DebugOperator;
 import com.github.howjz.job.operator.error.AlwaysRetryOperator;
 import com.github.howjz.job.operator.error.ErrorData;
@@ -285,11 +286,12 @@ public class GenericJobAutoConfiguration {
         GenericJobOperator genericJobOperator = new GenericJobOperator(dataContext);
         PoolOperator poolOperator = new PoolOperator(dataContext);
         WaitingOperator waitingOperator = new WaitingOperator(dataContext);
+        CrossOperator crossOperator = new CrossOperator(dataContext);
         ExecuteOperator executeOperator = new ExecuteOperator(dataContext);
         DebugOperator debugOperator = new DebugOperator(dataContext);
         return Arrays.asList(
           configOperator, alwaysRetryOperator, restartOperator, notifyOperator, retryOperator, errorOperator, linkOperator,
-          thenOperator, allThenOperator, joinOperator, genericJobOperator, poolOperator, waitingOperator, executeOperator, debugOperator
+          thenOperator, allThenOperator, joinOperator, genericJobOperator, poolOperator, waitingOperator, crossOperator, executeOperator, debugOperator
         );
     }
 

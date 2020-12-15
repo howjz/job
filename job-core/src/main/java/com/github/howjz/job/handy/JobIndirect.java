@@ -4,7 +4,10 @@ import com.github.howjz.job.Job;
 import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.bean.NullJob;
 import com.github.howjz.job.bean.Snapshot;
+import com.github.howjz.job.constant.JobStatus;
+import com.github.howjz.job.constant.JobType;
 import com.github.howjz.job.operator.execute.Executable;
+import com.github.howjz.job.operator.genericjob.GenericJob;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
@@ -14,6 +17,13 @@ import org.apache.commons.lang.ObjectUtils;
  * @date 2020/12/11 23:53
  */
 public interface JobIndirect {
+
+    default Job addTask(GenericJob task) throws Exception {
+        task.setType(JobType.TASK_JOB);
+        Job superJob = (Job) this;
+        JobHelper.manager.addTask(superJob, (Job) task);
+        return superJob;
+    }
 
     // ============== 间接调用 ==============
     default Job addTask(Job task) throws Exception {
@@ -41,7 +51,9 @@ public interface JobIndirect {
     default boolean isComplete() {
         Job superJob = (Job) this;
         Snapshot snapshot = superJob.getSnapshot();
-        return snapshot != null && snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getComplete());
+        return snapshot != null &&
+                ((snapshot.getTotal() != 0 && ObjectUtils.equals(snapshot.getTotal(), snapshot.getComplete()))
+                        || (snapshot.getTotal() == 0 && JobStatus.COMPLETE == superJob.getStatus()));
     }
 
     default boolean isEnd() {

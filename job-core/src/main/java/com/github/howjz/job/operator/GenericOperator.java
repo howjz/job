@@ -94,6 +94,11 @@ public abstract class GenericOperator<T> implements Operator<T> {
     }
 
     @Override
+    public void handleReadyJob(Job job) throws Exception {
+
+    }
+
+    @Override
     public void handleRun(GenericExecutorManager executorManager) throws Exception {
 
     }

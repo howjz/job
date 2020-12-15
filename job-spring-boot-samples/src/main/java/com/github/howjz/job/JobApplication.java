@@ -25,8 +25,9 @@ public class JobApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("等待下载完成");
-        DownloadFile file = new DownloadFile("http://down.sandai.net/thunder9/Thunder9.1.40.898.exe");
-        new DownloadJob(file)
+        JobHelper.createJob()
+                .addTask(new DownloadJob(new DownloadFile("http://down.sandai.net/thunder9/Thunder9.1.40.898.exe")))
+                .addTask(new DownloadJob(new DownloadFile("https://download.jetbrains.8686c.com/idea/ideaIU-2020.3.exe")))
                 .start()
                 .waiting();
         System.out.println("等待下载结束");

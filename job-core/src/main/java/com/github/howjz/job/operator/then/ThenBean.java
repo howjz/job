@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
@@ -47,7 +44,7 @@ public class ThenBean implements Serializable {
         this.thenId = String.format("%s-%s", this.formatExecutorId, this.count);
         this.taskAndThenIds = new ArrayList<>(0);
         this.thenIds = new ArrayList<>(0);
-        this.functions = new HashMap<>(0);
+        this.functions = new LinkedHashMap<>(0);
     }
 
     /**
@@ -89,6 +86,14 @@ public class ThenBean implements Serializable {
         if (function != null) {
             function.then(job);
         }
+        this.functions.remove(thenId);
+    }
+
+    public void startAll(Job job, Executor executor) throws Exception {
+        for(String thenId: this.functions.keySet()) {
+            this.functions.get(thenId).then(job);
+        }
+        this.functions.clear();
     }
 
 }

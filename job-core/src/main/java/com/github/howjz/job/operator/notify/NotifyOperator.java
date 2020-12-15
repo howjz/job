@@ -53,6 +53,11 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
                     // 3.2、手动触发任务停止事件
                     JobHelper.manager.handleStopTask(job, task);
                     break;
+                case COMPLETE:
+                    // 3.2、直接完成
+                    flag = OperatorEnableFlag.DISABLE;
+                    // 3.3、手动触发任务完成时间
+                    JobHelper.manager.handleCompleteTask(job, task);
             }
         }
         return flag;
@@ -66,6 +71,9 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
                 break;
             case STOP:
                 this.notifyJob(operator, JobStatus.STOP);
+                break;
+            case COMPLETE:
+                this.notifyJob(operator, JobStatus.COMPLETE);
                 break;
             case REMOVE:
                 if (!jobOrTask.isEnd()) {
@@ -94,6 +102,9 @@ public class NotifyOperator extends GenericOperator<NotifyBean> {
                     break;
                 case STOP:
                     JobHelper.manager.handleStopJob(job);
+                    break;
+                case COMPLETE:
+                    JobHelper.manager.handleCompleteJob(job);
                     break;
             }
         } else {

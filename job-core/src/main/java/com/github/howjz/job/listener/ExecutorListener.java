@@ -28,6 +28,13 @@ public interface ExecutorListener {
     void handleCreateJob(Job job) throws Exception;
 
     /**
+     * 作业就绪
+     * @param job
+     * @throws Exception
+     */
+    void handleReadyJob(Job job) throws Exception;
+
+    /**
      * 作业开始
      * @param job
      * @throws Exception

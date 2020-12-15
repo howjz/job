@@ -47,6 +47,16 @@ public interface JobOperable {
         JobHelper.manager.handleOperate(Operator.Operate.NOTIFY,superJob, new NotifyBean(NotifyType.STOP, superJob, task));
     }
 
+    default void complete() throws Exception {
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY,superJob, new NotifyBean(NotifyType.COMPLETE, superJob, null));
+    }
+
+    default void complete(Job task) throws Exception {
+        Job superJob = (Job) this;
+        JobHelper.manager.handleOperate(Operator.Operate.NOTIFY,superJob, new NotifyBean(NotifyType.COMPLETE, superJob, task));
+    }
+
     default void restart() throws Exception {
         Job superJob = (Job) this;
         JobHelper.manager.handleOperate(Operator.Operate.RESTART, superJob, new RestartBean(superJob, null));

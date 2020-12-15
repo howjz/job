@@ -27,9 +27,12 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public abstract class GenericJob<T> extends Job implements Executable, Thenable, ExecutorListener, StatusListener {
+    private static final long serialVersionUID = 8708949801206772106L;
+    private boolean inited;
 
     protected GenericJob(T param) throws Exception {
         this.setParam(param);
+        this.inited = false;
         // 这里需要手动触发 作业创建
         JobHelper.manager.handleCreateJob(this);
     }
@@ -48,6 +51,18 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
      * @return
      */
     public abstract String execute(Job job, Job task, Object param) throws Exception;
+
+    /**
+     * 必须调用init方法
+     * @throws Exception
+     */
+    protected void init() throws Exception {
+        // 当前为 GenericJob，生成任务并设置then
+        this.inited = true;
+        this.generateTasks();
+        this.then((Thenable) this);
+        this.handleCreateJob(this);
+    }
 
     /**
      * 生成任务
@@ -100,9 +115,15 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
     }
 
     @Override
+    public void handleReadyJob(Job job) throws Exception {
+
+    }
+
+    @Override
     public void handleCreateJob(Job job) throws Exception {
 
     }
+
 
     @Override
     public void handleStartJob(Job job) throws Exception {
@@ -187,5 +208,13 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
     @Override
     public void handleTask(Job job, Job task, JobStatus status) throws Exception {
 
+    }
+
+    @Override
+    public Job start() throws Exception {
+        if (!this.inited) {
+            throw new RuntimeException("开启自定义任务前必须调用init");
+        }
+        return super.start();
     }
 }

@@ -27,11 +27,14 @@ public class GenericJobOperator extends GenericOperator<ObjectUtils.Null> {
     @Override
     public void handleCreateJob(Job job) throws Exception {
         if (job instanceof GenericJob) {
-            // 当前为 GenericJob，生成任务并设置then
-            GenericJob genericJob = (GenericJob) job;
-            genericJob.generateTasks();
-            genericJob.then((Thenable) genericJob);
-            genericJob.handleCreateJob(job);
+            ((GenericJob) job).handleCreateJob(job);
+        }
+    }
+
+    @Override
+    public void handleReadyJob(Job job) throws Exception {
+        if (job instanceof GenericJob) {
+            ((GenericJob) job).handleReadyJob(job);
         }
     }
 
@@ -109,6 +112,13 @@ public class GenericJobOperator extends GenericOperator<ObjectUtils.Null> {
     public void handleWaitingJob(Job job) throws Exception {
         if (job instanceof GenericJob) {
             ((GenericJob) job).handleWaitingJob(job);
+        }
+    }
+
+    @Override
+    public void handleCompleteJob(Job job) throws Exception {
+        if (job instanceof GenericJob) {
+            ((GenericJob) job).handleCompleteJob(job);
         }
     }
 

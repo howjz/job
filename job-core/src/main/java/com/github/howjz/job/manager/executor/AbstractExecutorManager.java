@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.BooleanUtils;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,13 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
     }
 
     @Override
+    public void handleReadyJob(Job job) throws Exception {
+        for(String operate: this.operators.keySet()) {
+            this.operators.get(operate).handleReadyJob(job);
+        }
+    }
+
+    @Override
     public void handleStartJob(Job job) throws Exception {
         for(String operate: this.operators.keySet()) {
             this.operators.get(operate).handleStartJob(job);
@@ -164,6 +172,7 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
     @Override
     public void handleStopJob(Job job) throws Exception {
         job.setStatus(JobStatus.STOP);
+        job.setEndTime(new Date());
         for(String operate: this.operators.keySet()) {
             this.operators.get(operate).handleStopJob(job);
         }
@@ -179,6 +188,8 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
 
     @Override
     public void handleCompleteJob(Job job) throws Exception {
+        job.setStatus(JobStatus.COMPLETE);
+        job.setEndTime(new Date());
         for(String operate: this.operators.keySet()) {
             this.operators.get(operate).handleCompleteJob(job);
         }
@@ -275,8 +286,12 @@ public abstract class AbstractExecutorManager extends Thread implements Executor
             });
         }
         // 4、触发开始
-        if (JobType.JOB == job.getType()) {
-            this.handleStartJob(job);
+        if (JobType.JOB == job.getType() || JobType.TASK_JOB == job.getType()) {
+            if (JobStatus.COMPLETE == job.getStatus() && job.getTasks().size() == 0) {
+                this.handleCompleteJob(job);
+            } else {
+                this.handleStartJob(job);
+            }
         }
     }
 

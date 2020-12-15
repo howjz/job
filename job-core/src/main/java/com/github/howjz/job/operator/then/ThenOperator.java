@@ -81,7 +81,10 @@ public class ThenOperator extends GenericOperator<Thenable> {
             for(String thenId: thenIds) {
                 List<String> waitIds = this.waitMap.get(thenId);
                 if (waitIds == null || waitIds.size() == 0) {
-                    this.thenBeanMap.get(job.getId()).start(thenId, job,null);
+                    ThenBean thenBean = this.thenBeanMap.get(job.getId());
+                    if (thenBean != null) {
+                        thenBean.start(thenId, job,null);
+                    }
                     this.waitMap.remove(thenId);
                 }
                 remove = !this.waitMap.containsKey(thenId);
@@ -91,4 +94,13 @@ public class ThenOperator extends GenericOperator<Thenable> {
             this.notifyMap.remove(task.getId());
         }
     }
+
+    @Override
+    public void handleCompleteJob(Job job) throws Exception {
+        ThenBean thenBean = this.thenBeanMap.get(job.getId());
+        if (thenBean != null) {
+            thenBean.startAll(job, null);
+        }
+    }
+
 }
