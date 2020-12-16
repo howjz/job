@@ -11,8 +11,8 @@ public class NotifyUtil {
     /**
      * 获取目标的状态触发ID
      *  notify-作业ID-任务ID
-     * @param task
-     * @return
+     * @param task              任务
+     * @return                  目标触发ID
      */
     public static String targetNotifyTaskId(Job task) {
         return String.format("%s-%s-%s", "notify", task.getParentId(), task.getId());

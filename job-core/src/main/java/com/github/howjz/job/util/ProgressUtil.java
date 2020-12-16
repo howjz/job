@@ -34,7 +34,7 @@ public class ProgressUtil {
      * @param total             总数
      * @param leftText          详情左边文字
      * @param rightText         详情右边文字
-     * @return
+     * @return                  进度详情文字
      */
     public static String progressDetail(long complete, long total, String leftText, String rightText) {
         int showCompleteLength = String.format("%s / %s", total, total).length() + 2;
@@ -51,7 +51,7 @@ public class ProgressUtil {
      * @param completeText      进度条完成文字
      * @param runningText       进度条运行文字
      * @param rightText         进度条右边文字
-     * @return
+     * @return                  进度条文字
      */
     public static String progressBar(long complete, long total, int length, String leftText, String completeText, String runningText, String rightText) {
         int progress = (int) (complete * 1.0 * 100 / total);
@@ -78,7 +78,7 @@ public class ProgressUtil {
      * @param barCompleteText       进度条完成文字
      * @param barRunningText        进度条执行文字
      * @param barRightText          进度条右边文字
-     * @return
+     * @return                      进度文字
      */
     public static String progress(long complete,
                                   long total,

@@ -12,9 +12,9 @@ public interface Executable extends Serializable {
 
     /**
      * 子任务执行
-     * @param job
-     * @param task
-     * @throws Exception
+     * @param job           作业
+     * @param task          任务
+     * @throws Exception    异常
      */
     void execute(Job job, Job task) throws Exception;
 

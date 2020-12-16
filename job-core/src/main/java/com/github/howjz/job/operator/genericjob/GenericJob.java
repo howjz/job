@@ -41,22 +41,26 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
 
     /**
      * 生成任务参数
-     * @param tj    作业参数
-     * @return      任务参数列表
+     * @param tj            作业参数
+     * @return              任务参数列表
+     * @throws Exception    异常
      */
     public abstract List<Object> generateTaskParams(T tj) throws Exception;
 
     /**
      * 存在返回结果的执行函数
-     * @param job
-     * @param task
-     * @return
+     * @param job           作业
+     * @param task          任务
+     * @param param         参数
+     * @return              执行结果
+     * @throws Exception    异常
      */
     public abstract String execute(Job job, Job task, Object param) throws Exception;
 
     /**
      * 必须调用init方法
-     * @throws Exception
+     * @return              作业
+     * @throws Exception    异常
      */
     @Override
     public Job ready() throws Exception {
@@ -70,7 +74,7 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
 
     /**
      * 生成任务
-     * @return
+     * @throws Exception    异常
      */
     public void generateTasks() throws Exception {
         // 1、获取任务参数
@@ -81,9 +85,9 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
 
     /**
      * 调用有返回结果的execute，简化任务参数设置
-     * @param job
-     * @param task
-     * @throws Exception
+     * @param job           作业
+     * @param task          任务
+     * @throws Exception    异常
      */
     @Override
     public void execute(Job job, Job task) throws Exception {
@@ -95,6 +99,10 @@ public abstract class GenericJob<T> extends Job implements Executable, Thenable,
         task.setResult(result);
     }
 
+    /**
+     * @param text              打印文字
+     * @throws IOException      异常
+     */
     public synchronized void log(String text) throws IOException {
         System.out.println(text);
         File logFile = new File("log/job_" + this.getId() + ".txt");

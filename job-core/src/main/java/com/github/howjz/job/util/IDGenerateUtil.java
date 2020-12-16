@@ -2,28 +2,7 @@ package com.github.howjz.job.util;
 
 /**
  * 生成全局唯一id 工具类
- * 主键策略总结
- *（1）单实例或者单节点组：
- * 在单实例上或者单节点组上，使用自增ID作为首选主键。
- *（2）分布式架构场景：
- * 20个节点组下的小型规模的分布式场景，为了快速实现部署，可以采用多花存储费用、牺牲部分性能而使用UUID主键快速部署；
- * 20到200个节点组的中等规模的分布式场景，可以采用自增ID+步长的较快速方案。
- * 200以上节点组的大数据下的分布式场景，可以借鉴类似twitter雪花算法构造的全局自增ID作为主键。
- * Twitter_Snowflake<br>
- * SnowFlake的结构如下(每部分用-分开):<br>
- * 0 - 0000000000 0000000000 0000000000 0000000000 0 - 00000 - 00000 -
- * 000000000000 <br>
- * 1位标识，由于long基本类型在Java中是带符号的，最高位是符号位，正数是0，负数是1，所以id一般是正数，最高位是0<br>
- * 41位时间截(毫秒级)，注意，41位时间截不是存储当前时间的时间截，而是存储时间截的差值（当前时间截 - 开始时间截)
- * 得到的值），这里的的开始时间截，一般是我们的id生成器开始使用的时间，由我们程序来指定的（如下下面程序IdWorker类的startTime属性）。41位的时间截，可以使用69年，年T
- * = (1L << 41) / (1000L * 60 * 60 * 24 * 365) = 69<br>
- * 10位的数据机器位，可以部署在1024个节点，包括5位datacenterId和5位workerId<br>
- * 12位序列，毫秒内的计数，12位的计数顺序号支持每个节点每毫秒(同一机器，同一时间截)产生4096个ID序号<br>
- * 加起来刚好64位，为一个Long型。<br>
- * SnowFlake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞(由数据中心ID和机器ID作区分)，并且效率较高，经测试，SnowFlake每秒能够产生26万ID左右。
- *
  * 参考 https://github.com/limaomei1986/snowflake/blob/master/src/snowflake/SnowflakeIdWorker.java
- * @author fangwk
  * @date 2017/11/28
  */
 public class IDGenerateUtil {
@@ -158,6 +137,9 @@ public class IDGenerateUtil {
 
 	// ==============================Test=============================================
 	/** 测试 */
+	/**
+	 * @param args	参数
+	 */
 	public static void main(String[] args) {
 		IDGenerateUtil idWorker = new IDGenerateUtil(0, 0);
 //		System.out.println(idWorker.nextId());

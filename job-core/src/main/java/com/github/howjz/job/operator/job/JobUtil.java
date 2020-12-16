@@ -55,8 +55,9 @@ public class JobUtil {
 
     /**
      * 获取任务历史信息
-     * @param jobId
-     * @return
+     * @param dataContext   数据上下文
+     * @param jobId         作业ID
+     * @return              任务历史信息
      */
     public synchronized static Map<String, Job> getHistoryTaskMap(JobDataContext dataContext, String jobId) {
         Map<String, Set<String>> jobTaskRelationMap = dataContext.getJobData().getJobTaskRelationMap();
@@ -75,8 +76,9 @@ public class JobUtil {
 
     /**
      * 计算快照进度
-     * @param job
-     * @param task
+     * @param dataContext   数据上下文
+     * @param job           作业
+     * @param task          任务
      */
     public synchronized static void calcSnapshot(JobDataContext dataContext, Job job, Job task) {
         if (job == null) {

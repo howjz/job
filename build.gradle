@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.github.howjz'
-version '1.0.0-SNAPSHOT'
+version '1.0.0.RELEASE'
 
 ext {
     log4j2Version = '2.7'
@@ -15,17 +15,6 @@ ext {
     springBootVersion = '2.1.8.RELEASE'
     druidVersion = '1.1.9'
     mybatisStarterVersion = '2.1.0'
-    serviceVersion = '1.0.0-SNAPSHOT'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-    classifier = 'sources'
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    classifier = 'javadoc'
 }
 
 project(':job-core') {
@@ -118,9 +107,9 @@ project(':job-spring-boot-samples') {
 allprojects {
     apply plugin: "java"
     apply plugin: "java-library"
+    apply plugin: "io.spring.dependency-management"
     apply plugin: "maven-publish"
     apply plugin: "signing"
-    apply plugin: "io.spring.dependency-management"
 
     sourceCompatibility = 1.8
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
@@ -134,17 +123,14 @@ allprojects {
         mavenCentral()
     }
 
-    javadoc {
-        options.tags = ["date"]
-        if (JavaVersion.current().isJava9Compatible()) {
-            options.addBooleanOption("html5", true)
-        }
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        classifier = 'sources'
     }
 
-    // remove default logger
-     configurations {
-        all*.exclude group: 'commons-logging'
-        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    task javadocJar(type: Jar) {
+        from javadoc
+        classifier = 'javadoc'
     }
 
     publishing {
@@ -152,7 +138,7 @@ allprojects {
             mavenJava(MavenPublication) {
                 groupId rootProject.name
                 artifactId project.name
-                version "$serviceVersion"
+                version project.version
                 from components.java
                 artifact sourcesJar
                 artifact javadocJar
@@ -186,7 +172,7 @@ allprojects {
                 def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                 def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
                 // 指定要上传的仓库
-                url = snapshotsRepoUrl
+                url = releasesRepoUrl
                 // 认证用户和密码
                 credentials {
                     username "$nexususer"
@@ -195,14 +181,30 @@ allprojects {
             }
         }
     }
-}
 
-signing {
-    sign publishing.publications.mavenJava
-}
+    signing {
+        sign publishing.publications.mavenJava
+    }
 
-javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html4', true)
+    javadoc {
+        options.tags = ["date"]
+        options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            author true
+            version true
+            title "how-job"
+        }
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption("html5", true)
+        }
+    }
+
+    // remove default logger
+    configurations {
+        all*.exclude group: 'commons-logging'
+        all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 }
+
+

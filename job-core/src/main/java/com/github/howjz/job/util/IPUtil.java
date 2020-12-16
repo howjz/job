@@ -17,7 +17,7 @@ public class IPUtil {
     /**
      * Get a site local address like 192.168.xxx.xxx
      *
-     * @return
+     * @return  本机IP
      */
     public static String getSiteLocalAddress() {
         try {

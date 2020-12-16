@@ -61,6 +61,8 @@ public class ThenBean implements Serializable {
      *  查找 thenIds 中 当前thenId的位置 + 1，即为实际then
      *  如果不存在，则默认为 0，即无then
      * 具体逻辑在：reviseThen
+     * @param job           作业
+     * @param task          任务
      */
     public void handleAddTask(Job job, Job task) {
         this.taskAndThenIds.add(task.getId());

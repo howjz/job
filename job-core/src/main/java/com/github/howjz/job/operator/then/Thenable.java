@@ -12,7 +12,8 @@ public interface Thenable extends Serializable {
 
     /**
      * then执行
-     * @throws Exception
+     * @param job           做而已
+     * @throws Exception    异常
      */
     void then(Job job) throws Exception;
 

@@ -16,6 +16,7 @@ public class DependUtil {
      * @param task      当前任务
      * @param waitMap   等待map
      * @param notifyMap 触发map
+     * @return          当前需要触发的等待ID
      */
     public static synchronized List<String> notifyRemoveWait(Job task, Map<String, List<String>> waitMap, Map<String, List<String>> notifyMap) {
         String taskId = task.getId();
@@ -40,8 +41,8 @@ public class DependUtil {
 
     /**
      * waitMap 转换为 notifyMap
-     * @param waitMap
-     * @return
+     * @param waitMap   等待map
+     * @return          触发map
      */
     public static Map<String, List<String>> waitMapToNotifyMap(Map<String, List<String>> waitMap) {
         return waitMapToNotifyMap(waitMap, new HashMap<>(0));
@@ -64,8 +65,8 @@ public class DependUtil {
 
     /**
      * 获取结束的任务ID
-     * @param job
-     * @return
+     * @param job       作业
+     * @return          结束的任务ID列表
      */
     public static Set<String> getEndTaskIds(Job job) {
         Set<String> endTaskIds = new HashSet<>(0);
@@ -83,8 +84,8 @@ public class DependUtil {
 
     /**
      * 合并
-     * @param currentMap
-     * @param targetMap
+     * @param currentMap    当前map
+     * @param targetMap     目标map
      */
     public synchronized static void mergeDependMap(Map<String, List<String>> currentMap, Map<String, List<String>> targetMap) {
         for(String id: targetMap.keySet()) {

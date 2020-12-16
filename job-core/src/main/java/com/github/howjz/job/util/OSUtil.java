@@ -12,7 +12,7 @@ public class OSUtil {
 	/**
 	 *  获取当前系统是哪个平台
 	 *
-	 * @return
+	 * @return	平台信息
 	 */
 	public static String getPlatform() {
 		String currentOS = System.getProperty("os.name").toLowerCase();
@@ -27,7 +27,7 @@ public class OSUtil {
 
 	/**
 	 *  判断是否是linux系统
-	 * @return
+	 * @return	是否是linux系统
 	 */
 	public static boolean isLinux(){
 		return OS_PLATFORM[0].equalsIgnoreCase(getPlatform());
@@ -35,7 +35,7 @@ public class OSUtil {
 
 	/**
 	 *  判断是否是Windows系统
-	 * @return
+	 * @return	是否是Windows系统
 	 */
 	public static boolean isWindows(){
 		return OS_PLATFORM[1].equalsIgnoreCase(getPlatform());
@@ -43,7 +43,7 @@ public class OSUtil {
 
 	/**
 	 *  判断是否是MAC系统
-	 * @return
+	 * @return	是否是MAC系统
 	 */
 	public static boolean isMAC(){
 		return OS_PLATFORM[2].equalsIgnoreCase(getPlatform());

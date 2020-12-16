@@ -20,9 +20,11 @@ public class JoinUtil {
      * 数据结构如下：
      *  当前任务ID:需要等待的任务ID
      * 规则如下：
-     *  joinCount ==0，无等待
-     *  joinCount > 0，等待 joinCount - 1 的任务ID
-     * @return
+     *  joinCount 等于 0，无等待
+     *  joinCount 大于 0，等待 joinCount - 1 的任务ID
+     * @param job           作业
+     * @param joinBeanMap   joinBean缓存map
+     * @return              等待map
      */
     public static Map<String, List<String>> getWaitMap(Job job, Map<String, JoinBean> joinBeanMap) {
         Map<String, List<String>> result = new HashMap<>(0);
@@ -94,7 +96,9 @@ public class JoinUtil {
      * 数据结构如下：
      *  当前任务ID:需要触发的任务ID（为 getJoinWaitMap 的key）
      * 直接从 waitMap 获取即可
-     * @return
+     * @param job               作业
+     * @param joinBeanMap       joinBean缓存map
+     * @return                  触发mao
      */
     public static Map<String, List<String>> getNotifyMap(Job job, Map<String, JoinBean> joinBeanMap) {
         // 获取 waitMap

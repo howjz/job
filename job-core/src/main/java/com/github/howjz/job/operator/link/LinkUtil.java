@@ -52,7 +52,7 @@ public class LinkUtil {
      *          子任务型作业1: [子任务型作业1任务1, 子任务型作业1任务2]
      *      }
      * @param job   作业
-     * @return
+     * @return  等待map
      */
     public static Map<String, List<String>> getWaitMap(Job job) {
         Map<String, List<String>> result = new HashMap<>(0);
@@ -69,7 +69,7 @@ public class LinkUtil {
      *          子任务型作业1任务2: [子任务型作业1]
      *      }
      * @param job   作业
-     * @return
+     * @return      触发map
      */
     public static Map<String, List<String>> getNotifyMap(Job job) {
         return DependUtil.waitMapToNotifyMap(getWaitMap(job));

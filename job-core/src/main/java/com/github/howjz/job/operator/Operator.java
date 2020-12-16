@@ -51,24 +51,25 @@ public interface Operator<T> extends StatusListener, ExecutorListener {
 
     /**
      * 获取操作类型
-     * @return
+     * @return      操作类型
      */
     Operate operate();
 
     /**
      * 判断当前任务是否允许执行
      *
-     * @param job
-     * @param task
-     * @return
-     * @throws Exception
+     * @param job           作业
+     * @param task          任务
+     * @return              执行标志
+     * @throws Exception    异常
      */
     OperatorEnableFlag enable(Job job, Job task) throws Exception;
 
     /**
      * 执行操作
-     * @param jobOrTask 作业或任务
-     * @param operator  操作参数
+     * @param jobOrTask     作业或任务
+     * @param operator      操作参数
+     * @throws Exception    异常
      */
     void handleOperate(Job jobOrTask, T operator) throws Exception;
 
