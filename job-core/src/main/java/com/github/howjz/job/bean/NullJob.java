@@ -1,13 +1,6 @@
 package com.github.howjz.job.bean;
 
 import com.github.howjz.job.Job;
-import com.github.howjz.job.JobHelper;
-import com.github.howjz.job.constant.JobStatus;
-import com.github.howjz.job.constant.JobType;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *  空作业，用于用于避免异常操作

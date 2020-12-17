@@ -2,14 +2,12 @@ package com.github.howjz.job.operator.job;
 
 import com.github.howjz.job.Job;
 import com.github.howjz.job.JobDataContext;
-import com.github.howjz.job.bean.Snapshot;
 import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.manager.GenericExecutorManager;
 import com.github.howjz.job.operator.GenericOperator;
 import com.github.howjz.job.operator.OperatorEnableFlag;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 

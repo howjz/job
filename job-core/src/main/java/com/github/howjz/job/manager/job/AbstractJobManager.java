@@ -5,12 +5,14 @@ import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.bean.NullJob;
 import com.github.howjz.job.constant.JobStatus;
 import com.github.howjz.job.operator.execute.Executable;
-import com.github.howjz.job.operator.job.JobData;
 import com.github.howjz.job.operator.job.JobUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**

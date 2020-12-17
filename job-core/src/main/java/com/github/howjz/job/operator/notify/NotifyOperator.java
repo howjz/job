@@ -9,7 +9,6 @@ import com.github.howjz.job.operator.GenericOperator;
 import com.github.howjz.job.operator.OperatorEnableFlag;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author zhangjh

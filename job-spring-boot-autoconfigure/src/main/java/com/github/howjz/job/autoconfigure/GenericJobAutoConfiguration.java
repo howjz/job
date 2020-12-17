@@ -1,7 +1,6 @@
 package com.github.howjz.job.autoconfigure;
 
 import com.github.howjz.job.Executor;
-import com.github.howjz.job.Job;
 import com.github.howjz.job.JobDataContext;
 import com.github.howjz.job.JobHelper;
 import com.github.howjz.job.constant.JobKey;

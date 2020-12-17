@@ -13,14 +13,14 @@ public enum JobStatus {
     /**
      * 作业状态
      */
-    SKIP("跳过", -4, true),
-    EXCEPTION("发生异常", -3, true),
-    STOP("已停止", -2, true),
-    PAUSE("暂停中", -1, false),
     WAIT("等待中", 0, false),
     READY("已就绪", 1,false),
     RUNNING("运行中", 2, false),
-    COMPLETE("已完成", 3, true)
+    COMPLETE("已完成", 3, true),
+    PAUSE("暂停中", -1, false),
+    STOP("已停止", -2, true),
+    EXCEPTION("发生异常", -3, true),
+    SKIP("跳过", -4, true),
     ;
 
     private String key;

@@ -8,9 +8,7 @@ import com.github.howjz.job.constant.JobType;
 import com.github.howjz.job.manager.task.AbstractTaskManager;
 import com.github.howjz.job.operator.execute.Executable;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author zhangjh

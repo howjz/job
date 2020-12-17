@@ -6,8 +6,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Random;
-
 /**
  * @author zhangjh
  * @date 2020/12/15 16:33

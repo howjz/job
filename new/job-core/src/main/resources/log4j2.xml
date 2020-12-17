@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<configuration>
+    <Properties>
+        <Property name="baseAppPath">/opt/logs/indoormap/admin</Property>
+    </Properties>
+
+    <!--先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <console name="Console" target="SYSTPoliciesEM_OUT">
+            <!-- 在相应的线程中存放 ThreadContext.put("log_disable", "true"); 就不会打印log了 -->
+            <ThreadContextMapFilter onMatch="DENY" onMismatch="NEUTRAL">
+                <KeyValuePair key="log_disable" value="true" />
+            </ThreadContextMapFilter>
+            <!--输出日志的格式-->
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d] [%p] [%t] [%l] - %m%n"/>
+        </console>
+        <!-- 打印所有的level及以上级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面 -->
+        <RollingFile name="RollingFileDebug" fileName="${baseAppPath}/debug.log"
+                     filePattern="${baseAppPath}/%d{yyyy-MM}/debug.%d{yyyy-MM-dd}-%i.log">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d] [%p] [%t] [%l] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="7"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 删除策略配置 -->
+            <DefaultRolloverStrategy max="30">
+                <!-- 日志文件根目录 -->
+                <Delete basePath="${baseAppPath}" maxDepth="2">
+                    <IfFileName glob="*/debug.*.log"/>
+                    <!-- 只保留14天内日志 -->
+                    <IfLastModified age="7d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="RollingFileInfo" fileName="${baseAppPath}/info.log"
+                     filePattern="${baseAppPath}/%d{yyyy-MM}/info.%d{yyyy-MM-dd}-%i.log">
+            <!-- 不输出error以上日志 -->
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="[%d] [%p] [%t] [%l] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="7"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 删除策略配置 -->
+            <DefaultRolloverStrategy max="30">
+                <!-- 日志文件根目录 -->
+                <Delete basePath="${baseAppPath}" maxDepth="2">
+                    <IfFileName glob="*/info.*.log"/>
+                    <!-- 只保留14天内日志 -->
+                    <IfLastModified age="14d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+        <RollingFile name="RollingFileError" fileName="${baseAppPath}/error.log"
+                     filePattern="${baseAppPath}/%d{yyyy-MM}/error.%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d] [%p] [%t] [%l] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="7"/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 删除策略配置 -->
+            <DefaultRolloverStrategy max="30">
+                <!-- 日志文件根目录 -->
+                <Delete basePath="${baseAppPath}" maxDepth="2">
+                    <IfFileName glob="*/error.*.log"/>
+                    <!-- 只保留14天内日志 -->
+                    <IfLastModified age="30d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </appenders>
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="DEBUG"/>
+        <logger name="org.apache.ibatis.io.ResolverUtil" level="INFO"/>
+        <logger name="org.mybatis.spring" level="INFO"/>
+        <logger name="com.huatugz" level="DEBUG"/>
+        <root>
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileDebug"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </loggers>
+</configuration>
