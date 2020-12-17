@@ -1,7 +1,6 @@
 package com.github.howjz.job.trigger;
 
-import com.github.howjz.job.handler.TaskTrigger;
-import com.github.howjz.job.runnable.ExecutorRunnable;
+import com.github.howjz.job.thread.ExecutorThread;
 
 /**
  *  执行器触发器
@@ -13,16 +12,16 @@ public interface ExecutorTrigger extends JobTrigger, TaskTrigger {
 
     /**
      * 执行线程就绪
-     * @param executorRunnable  执行器执行线程
+     * @param executorThread    执行器执行线程
      * @throws Exception        异常抛出
      */
-    void handleReady(ExecutorRunnable executorRunnable) throws Exception;
+    void handleReady(ExecutorThread executorThread) throws Exception;
 
     /**
      * 执行线程执行完成
-     * @param executorRunnable  执行器执行线程
+     * @param executorThread    执行器执行线程
      * @throws Exception        异常抛出
      */
-    void handleExecuted(ExecutorRunnable executorRunnable) throws Exception;
+    void handleExecuted(ExecutorThread executorThread) throws Exception;
 
 }

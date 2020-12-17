@@ -1,7 +1,7 @@
 how:
   job:
     enable: true
-    type: redis
+    type: local
     debug:
       sleep: 0
       log: true
@@ -12,12 +12,12 @@ server:
   port: 18000
 
 spring:
+  application:
+    name: how-job
   profiles:
-    active: dev
+    active: local
   redis:
     database: 0
-    host: 192.168.99.100
-    port: 63791
     lettuce:
       pool:
         max-active: 8
@@ -26,3 +26,16 @@ spring:
         min-idle: 0
         timeout: 5000
 
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    service-url:
+      defaultZone: http://192.168.1.116:18761/discover-eureka/eureka/
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+    enable-self-preservation: false # 测试环境关闭自我保护
+  instance:
+    prefer-ip-address: true
+    ip-address: 192.198.1.116
+    metadataMap.prometheus.port: 8293

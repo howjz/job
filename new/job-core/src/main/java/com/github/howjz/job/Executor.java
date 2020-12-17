@@ -1,5 +1,6 @@
 package com.github.howjz.job;
 
+import com.github.howjz.job.operator.thread.ThreadProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -28,6 +29,9 @@ public class Executor implements Serializable {
 
     // 是否已经启动
     private boolean init;
+
+    // 执行器线程配置信息
+    private ThreadProperties thread;
 
     public enum Mode {
 

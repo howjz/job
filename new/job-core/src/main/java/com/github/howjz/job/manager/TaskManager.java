@@ -1,9 +1,8 @@
 package com.github.howjz.job.manager;
 
 import com.github.howjz.job.Job;
-import com.github.howjz.job.handler.TaskTrigger;
-import com.github.howjz.job.listener.JobListener;
 import com.github.howjz.job.listener.TaskListener;
+import com.github.howjz.job.trigger.TaskTrigger;
 
 import java.util.List;
 
@@ -49,4 +48,24 @@ public interface TaskManager extends TaskTrigger, TaskListener {
      */
     void sync(Job job, Job task) throws Exception;
 
+    /**
+     * 拉取任务
+     * @return              任务
+     * @throws Exception    异常抛出
+     */
+    Job pull() throws Exception;
+
+    /**
+     * 提交任务
+     * @param task          任务
+     * @throws Exception    异常抛出
+     */
+    void push(Job task) throws Exception;
+
+    /**
+     * 获取队列中的任务个数
+     * @return              任务个数
+     * @throws Exception    异常抛出
+     */
+    Integer getCommits() throws Exception;
 }

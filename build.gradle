@@ -15,6 +15,7 @@ ext {
     springBootVersion = '2.1.8.RELEASE'
     druidVersion = '1.1.9'
     mybatisStarterVersion = '2.1.0'
+    springCloudVersion = 'Greenwich.SR2'
 }
 
 project(':job-core') {
@@ -131,8 +132,12 @@ project(':job-spring-boot-samples') {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
     dependencies {
-        compile project(":job-spring-boot-starter:job-spring-boot-starter-redis")
+        compile project(":job-spring-boot-starter:job-spring-boot-starter")
         compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+
+        compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+        compile("com.google.code.gson:gson:2.8.2")
     }
 }
 
@@ -153,6 +158,12 @@ allprojects {
         maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         // 中央库
         mavenCentral()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
     }
 
     task sourcesJar(type: Jar) {

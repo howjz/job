@@ -8,7 +8,7 @@ package com.github.howjz.job.constant;
 public enum TaskEnableFlag {
 
     // 继续
-    KEEP,
+    ENABLE,
 
     // 不允许
     DISABLE,

@@ -1,4 +1,4 @@
-package com.github.howjz.job.handler;
+package com.github.howjz.job.trigger;
 
 import com.github.howjz.job.Job;
 

@@ -1,11 +1,13 @@
 package com.github.howjz.job;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.howjz.job.operator.ExecutorOperator;
 import com.github.howjz.job.util.IDGenerateUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -41,5 +43,12 @@ public class ExecutorDataContext implements Serializable {
     // 备用线程池
     @JsonIgnore
     private ExecutorService spareExecutorPool;
+
+    // 操作器
+    @JsonIgnore
+    private List<ExecutorOperator<?>> operators;
+
+    // ============================== operator ==============================
+
 
 }
